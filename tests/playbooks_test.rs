@@ -44,7 +44,7 @@ fn create_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        lead: Manifest::default(),
+        manifest: Manifest::default(),
     };
 
     let playbook = client.playbooks().create(payload).unwrap().data.unwrap();
@@ -78,7 +78,7 @@ fn update_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        lead: Manifest::default(),
+        manifest: Manifest::default(),
     };
 
     let playbook = client
