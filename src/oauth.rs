@@ -70,8 +70,8 @@ impl OAuth<'_> {
     /// # Examples
     ///
     /// ```no_run
-    /// use client::client::Client;
-    /// use client::oauth::OAuthTokenPayload;
+    /// use amp_client::client::Client;
+    /// use amp_client::oauth::OAuthTokenPayload;
     ///
     /// let client = Client::new(
     ///     String::from("https://cloud.amphitheatre.app"),

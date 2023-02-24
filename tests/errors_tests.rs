@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use amp_client::errors::ClientError;
 use assert_matches::assert_matches;
-use client::errors::ClientError;
 use serde_json::json;
 
 use crate::common::setup_mock_for;

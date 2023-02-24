@@ -16,7 +16,7 @@
 
 use std::fs;
 
-use client::client::Client;
+use amp_client::client::Client;
 use mockito::{mock, Mock};
 
 /// Creates a mockserver and a client (changing the url of the client

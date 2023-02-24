@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use client::oauth::OAuthTokenPayload;
+use amp_client::oauth::OAuthTokenPayload;
 
 use crate::common::setup_mock_for;
 

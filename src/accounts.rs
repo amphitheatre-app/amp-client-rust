@@ -50,7 +50,7 @@ impl Accounts<'_> {
     /// # Examples
     ///
     /// ```no_run
-    /// use client::client::Client;
+    /// use amp_client::client::Client;
     ///
     /// let client = Client::new(
     ///     String::from("https://cloud.amphitheatre.app"),

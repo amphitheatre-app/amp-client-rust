@@ -8,7 +8,7 @@ able to call all the enpoints of the Amphitheatre API and their respective funct
 ## Examples
 
 ```rust
-use client::client::Client;
+use amp_client::client::Client;
 
 let client = Client::new(
     String::from("https://cloud.amphitheatre.app"),

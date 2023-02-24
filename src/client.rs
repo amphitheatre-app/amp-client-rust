@@ -38,7 +38,7 @@ const API_VERSION: &str = "v1";
 /// # Examples
 ///
 /// ```no_run
-/// use client::client::Client;
+/// use amp_client::client::Client;
 ///
 /// let client = Client::new(
 ///     String::from("https://cloud.amphitheatre.app"),
@@ -171,7 +171,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use client::client::Client;
+    /// use amp_client::client::Client;
     /// let client = Client::new(
     ///     String::from("https://cloud.amphitheatre.app"),
     ///     String::from("AUTH_TOKEN"),
