@@ -58,7 +58,7 @@ fn create_playbook_test() {
 fn get_playbook_test() {
     let setup = setup_mock_for("/playbooks/1", "playbooks/get-playbook-success", "GET");
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let playbook = client.playbooks().get(playbook_id).unwrap().data.unwrap();
 
@@ -73,7 +73,7 @@ fn get_playbook_test() {
 fn update_playbook_test() {
     let setup = setup_mock_for("/playbooks/1", "playbooks/update-playbook-success", "PATCH");
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let payload = PlaybookPayload {
         title: String::from("Default"),
@@ -97,7 +97,7 @@ fn update_playbook_test() {
 fn delete_playbook_test() {
     let setup = setup_mock_for("/playbooks/1", "playbooks/delete-playbook-success", "DELETE");
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let response = client.playbooks().delete(playbook_id);
 
@@ -113,7 +113,7 @@ fn get_playbook_events() {
         "GET",
     );
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let response = client.playbooks().events(playbook_id);
 
@@ -128,7 +128,7 @@ fn start_playbook_test() {
         "POST",
     );
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let response = client.playbooks().start(playbook_id);
 
@@ -144,7 +144,7 @@ fn stop_playbook_test() {
         "POST",
     );
     let client = setup.0;
-    let playbook_id = 1;
+    let playbook_id = "1";
 
     let response = client.playbooks().stop(playbook_id);
 

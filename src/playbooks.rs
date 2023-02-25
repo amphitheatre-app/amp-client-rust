@@ -92,7 +92,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The ID of the playbook we want to retrieve
-    pub fn get(&self, playbook_id: u64) -> Result<Response<Playbook>, ClientError> {
+    pub fn get(&self, playbook_id: &str) -> Result<Response<Playbook>, ClientError> {
         let path = format!("/playbooks/{}", playbook_id);
         self.client.get::<PlaybookEndpoint>(&path, None)
     }
@@ -105,7 +105,7 @@ impl Playbooks<'_> {
     /// `payload`: The `PlaybookPayload` with the information needed to update
     pub fn update(
         &self,
-        playbook_id: u64,
+        playbook_id: &str,
         payload: PlaybookPayload,
     ) -> Result<Response<Playbook>, ClientError> {
         let path = format!("/playbooks/{}", playbook_id);
@@ -123,7 +123,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    pub fn delete(&self, playbook_id: u64) -> Result<EmptyResponse, ClientError> {
+    pub fn delete(&self, playbook_id: &str) -> Result<EmptyResponse, ClientError> {
         let path = format!("/playbooks/{}", playbook_id);
         self.client.delete(&path)
     }
@@ -133,7 +133,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    pub fn events(&self, _playbook_id: u64) -> String {
+    pub fn events(&self, _playbook_id: &str) -> String {
         // let path = format!("/playbooks/{}/events", playbook_id);
         String::from("event stream (JSON)")
     }
@@ -143,7 +143,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    pub fn start(&self, playbook_id: u64) -> Result<EmptyResponse, ClientError> {
+    pub fn start(&self, playbook_id: &str) -> Result<EmptyResponse, ClientError> {
         let path = format!("/playbooks/{}/actions/start", playbook_id);
         self.client.empty_post(&path)
     }
@@ -153,7 +153,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    pub fn stop(&self, playbook_id: u64) -> Result<EmptyResponse, ClientError> {
+    pub fn stop(&self, playbook_id: &str) -> Result<EmptyResponse, ClientError> {
         let path = format!("/playbooks/{}/actions/stop", playbook_id);
         self.client.empty_post(&path)
     }
