@@ -38,8 +38,8 @@ pub struct PlaybookPayload {
     pub title: String,
     /// The description of the playbook
     pub description: String,
-    /// The lead character manifest of the playbook
-    pub manifest: Manifest,
+    /// The leading character manifest of the playbook
+    pub protagonist: Manifest,
 }
 
 struct PlaybookEndpoint;
