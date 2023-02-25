@@ -29,7 +29,7 @@ fn list_playbooks_test() {
 
     let playbook = playbooks.first().unwrap();
 
-    assert_eq!(1, playbook.id);
+    assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
     assert_eq!("First", playbook.description);
     assert_eq!("2016-01-19T20:50:26Z", playbook.created_at);
@@ -49,7 +49,7 @@ fn create_playbook_test() {
 
     let playbook = client.playbooks().create(payload).unwrap().data.unwrap();
 
-    assert_eq!(1, playbook.id);
+    assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
     assert_eq!("First", playbook.description);
 }
@@ -62,7 +62,7 @@ fn get_playbook_test() {
 
     let playbook = client.playbooks().get(playbook_id).unwrap().data.unwrap();
 
-    assert_eq!(1, playbook.id);
+    assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
     assert_eq!("First", playbook.description);
     assert_eq!("2016-01-19T20:50:26Z", playbook.created_at);
@@ -88,7 +88,7 @@ fn update_playbook_test() {
         .data
         .unwrap();
 
-    assert_eq!(1, playbook.id);
+    assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
     assert_eq!("First", playbook.description);
 }

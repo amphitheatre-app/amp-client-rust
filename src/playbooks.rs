@@ -21,7 +21,7 @@ use super::errors::ClientError;
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Playbook {
     /// The playbook ID in Amphitheatre.
-    pub id: u64,
+    pub id: String,
     /// The title of the playbook.
     pub title: String,
     /// The description of the playbook.
