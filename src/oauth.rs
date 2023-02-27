@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use amp_common::client::{Client, ClientError};
 use serde::{Deserialize, Serialize};
-
-use super::client::Client;
-use super::errors::ClientError;
 
 /// Represents the payload used to exchange this information for the
 /// access token (`AccessToken`).

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_client::errors::ClientError;
+use amp_common::client::ClientError;
 use assert_matches::assert_matches;
 use serde_json::json;
 

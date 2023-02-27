@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use amp_common::client::{Client, ClientError, Endpoint, Response};
 use serde::{Deserialize, Serialize};
-
-use super::client::{Client, Endpoint, Response};
-use super::errors::ClientError;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Account {

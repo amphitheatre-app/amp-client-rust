@@ -16,7 +16,7 @@ use std::collections::HashMap;
 
 use crate::common::setup_mock_for;
 mod common;
-use amp_client::client::{Endpoint, Filters, Paginate, RequestOptions, Sort};
+use amp_common::client::{Endpoint, Filters, Paginate, RequestOptions, Sort};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
