@@ -10,10 +10,7 @@ able to call all the enpoints of the Amphitheatre API and their respective funct
 ```rust
 use amp_client::client::Client;
 
-let client = Client::new(
-    String::from("https://cloud.amphitheatre.app"),
-    String::from("AUTH_TOKEN"),
-);
+let client = Client::new("https://cloud.amphitheatre.app","AUTH_TOKEN");
 let response = client.accounts().me().unwrap();
 let account = response.data.unwrap();
 ```
