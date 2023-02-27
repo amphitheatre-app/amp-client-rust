@@ -47,7 +47,7 @@ pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, Mock)
         .with_body(body.unwrap())
         .create();
 
-    let client = Client::new(mockito::server_url(), String::from("some-token"));
+    let client = Client::new(mockito::server_url().as_str(), "some-token");
 
     (client, mock)
 }

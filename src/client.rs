@@ -29,10 +29,7 @@ use super::playbooks::Playbooks;
 /// ```no_run
 /// use amp_client::client::Client;
 ///
-/// let client = Client::new(
-///     String::from("https://cloud.amphitheatre.app"),
-///     String::from("AUTH_TOKEN"),
-/// );
+/// let client = Client::new("https://cloud.amphitheatre.app", "AUTH_TOKEN");
 /// let response = client.accounts().me().unwrap();
 ///
 /// let account = response.data.unwrap();
@@ -42,9 +39,9 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(base_url: String, token: String) -> Self {
+    pub fn new(base_url: &str, token: &str) -> Self {
         Self {
-            client: amp_common::client::Client::new(&base_url, &token),
+            client: amp_common::client::Client::new(base_url, token),
         }
     }
 
@@ -72,7 +69,7 @@ mod tests {
     #[test]
     fn creates_a_client() {
         let token = "some-auth-token";
-        let _client = Client::new(String::from(BASE_URL), String::from(token));
+        let _client = Client::new(BASE_URL, token);
     }
 }
 

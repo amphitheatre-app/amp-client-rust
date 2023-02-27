@@ -50,10 +50,7 @@ impl Accounts<'_> {
     /// ```no_run
     /// use amp_client::client::Client;
     ///
-    /// let client = Client::new(
-    ///     String::from("https://cloud.amphitheatre.app"),
-    ///     String::from("AUTH_TOKEN"),
-    /// );
+    /// let client = Client::new("https://cloud.amphitheatre.app", "AUTH_TOKEN");
     /// let response = client.accounts().me().unwrap();
     /// let account = response.data.unwrap();
     /// ```

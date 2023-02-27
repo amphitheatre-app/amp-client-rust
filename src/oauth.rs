@@ -71,10 +71,7 @@ impl OAuth<'_> {
     /// use amp_client::client::Client;
     /// use amp_client::oauth::OAuthTokenPayload;
     ///
-    /// let client = Client::new(
-    ///     String::from("https://cloud.amphitheatre.app"),
-    ///     String::from("AUTH_TOKEN"),
-    /// );
+    /// let client = Client::new("https://cloud.amphitheatre.app", "AUTH_TOKEN");
     /// let payload = OAuthTokenPayload {
     ///     client_id: "id".to_string(),
     ///     client_secret: "secret".to_string(),
