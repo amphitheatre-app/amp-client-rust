@@ -25,7 +25,7 @@ fn list_actors_test() {
     );
     let client = setup.0;
 
-    let actors = client.actors().list(playbook_id, None).unwrap().data.unwrap();
+    let actors = client.actors().list(playbook_id, None).unwrap();
 
     assert_eq!(2, actors.len());
 
@@ -44,7 +44,7 @@ fn get_actor_test() {
     let client = setup.0;
     let actor_id = 1;
 
-    let actor = client.actors().get(actor_id).unwrap().data.unwrap();
+    let actor = client.actors().get(actor_id).unwrap();
 
     assert_eq!(1, actor.id);
     assert_eq!("Default", actor.title);
@@ -70,7 +70,7 @@ fn get_actor_info_test() {
     let client = setup.0;
     let actor_id = 1;
 
-    let json = client.actors().info(actor_id).unwrap().data.unwrap();
+    let json = client.actors().info(actor_id).unwrap();
 
     assert_eq!("RdqNLMXRiRsHJhmxKurR", json["environments"]["K3S_TOKEN"]);
     assert_eq!(
@@ -86,7 +86,7 @@ fn get_actor_stats_test() {
     let client = setup.0;
     let actor_id = 1;
 
-    let json = client.actors().stats(actor_id).unwrap().data.unwrap();
+    let json = client.actors().stats(actor_id).unwrap();
 
     assert_eq!("1.98%", json["CPU USAGE"]);
     assert_eq!("5.3MB / 43.7 MB", json["DISK READ/WRITE"]);

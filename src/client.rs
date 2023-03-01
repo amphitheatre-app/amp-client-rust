@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::client::{ClientError, Endpoint, RequestOptions, Response};
+use std::collections::HashMap;
+
+use amp_common::client::{ClientError, Endpoint, Response};
 
 use super::accounts::Accounts;
 use super::actors::Actors;
@@ -29,17 +31,16 @@ use super::playbooks::Playbooks;
 /// ```no_run
 /// use amp_client::client::Client;
 ///
-/// let client = Client::new("https://cloud.amphitheatre.app", "AUTH_TOKEN");
-/// let response = client.accounts().me().unwrap();
-///
-/// let account = response.data.unwrap();
+/// let token = Some(String::from("AUTH_TOKEN"));
+/// let client = Client::new("https://cloud.amphitheatre.app", token);
+/// let account = client.accounts().me().unwrap();
 /// ```
 pub struct Client {
     client: amp_common::client::Client,
 }
 
 impl Client {
-    pub fn new(base_url: &str, token: &str) -> Self {
+    pub fn new(base_url: &str, token: Option<String>) -> Self {
         Self {
             client: amp_common::client::Client::new(base_url, token),
         }
@@ -55,7 +56,7 @@ impl Client {
     pub fn get<E: Endpoint>(
         &self,
         path: &str,
-        options: Option<RequestOptions>,
+        options: Option<HashMap<String, String>>,
     ) -> Result<Response<E::Output>, ClientError> {
         self.client.get::<E>(path, options)
     }
@@ -68,7 +69,7 @@ mod tests {
 
     #[test]
     fn creates_a_client() {
-        let token = "some-auth-token";
+        let token = Some("some-auth-token".to_string());
         let _client = Client::new(BASE_URL, token);
     }
 }

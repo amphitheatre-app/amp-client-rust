@@ -23,7 +23,7 @@ fn list_playbooks_test() {
     let setup = setup_mock_for("/playbooks", "playbooks/list-playbooks-success", "GET");
     let client = setup.0;
 
-    let playbooks = client.playbooks().list(None).unwrap().data.unwrap();
+    let playbooks = client.playbooks().list(None).unwrap();
 
     assert_eq!(2, playbooks.len());
 
@@ -47,7 +47,7 @@ fn create_playbook_test() {
         protagonist: Manifest::default(),
     };
 
-    let playbook = client.playbooks().create(payload).unwrap().data.unwrap();
+    let playbook = client.playbooks().create(payload).unwrap();
 
     assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
@@ -60,7 +60,7 @@ fn get_playbook_test() {
     let client = setup.0;
     let playbook_id = "1";
 
-    let playbook = client.playbooks().get(playbook_id).unwrap().data.unwrap();
+    let playbook = client.playbooks().get(playbook_id).unwrap();
 
     assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
@@ -81,12 +81,7 @@ fn update_playbook_test() {
         protagonist: Manifest::default(),
     };
 
-    let playbook = client
-        .playbooks()
-        .update(playbook_id, payload)
-        .unwrap()
-        .data
-        .unwrap();
+    let playbook = client.playbooks().update(playbook_id, payload).unwrap();
 
     assert_eq!("1", playbook.id);
     assert_eq!("Default", playbook.title);
@@ -102,7 +97,7 @@ fn delete_playbook_test() {
     let response = client.playbooks().delete(playbook_id);
 
     assert!(response.is_ok());
-    assert_eq!(204, response.unwrap().status);
+    assert_eq!(204, response.unwrap());
 }
 
 #[test]
@@ -133,7 +128,7 @@ fn start_playbook_test() {
     let response = client.playbooks().start(playbook_id);
 
     assert!(response.is_ok());
-    assert_eq!(204, response.unwrap().status);
+    assert_eq!(204, response.unwrap());
 }
 
 #[test]
@@ -149,5 +144,5 @@ fn stop_playbook_test() {
     let response = client.playbooks().stop(playbook_id);
 
     assert!(response.is_ok());
-    assert_eq!(204, response.unwrap().status);
+    assert_eq!(204, response.unwrap());
 }

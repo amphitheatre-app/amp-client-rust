@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::client::{Client, ClientError, Endpoint, RequestOptions, Response};
+use std::collections::HashMap;
+
+use amp_common::client::{Client, ClientError, Endpoint};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+
+use crate::Wrapper;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Actor {
@@ -33,19 +37,19 @@ pub struct Actor {
 struct ActorEndpoint;
 
 impl Endpoint for ActorEndpoint {
-    type Output = Actor;
+    type Output = Wrapper<Actor>;
 }
 
 struct ActorsEndpoint;
 
 impl Endpoint for ActorsEndpoint {
-    type Output = Vec<Actor>;
+    type Output = Wrapper<Vec<Actor>>;
 }
 
 struct ValueEndpoint;
 
 impl Endpoint for ValueEndpoint {
-    type Output = Value;
+    type Output = Wrapper<Value>;
 }
 
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.
@@ -61,15 +65,16 @@ impl Actors<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    /// `options`: The `RequestOptions`
+    /// `options`: The `HashMap<String, String>`
     ///             - Sort: `id`, `label`, `email`
     pub fn list(
         &self,
         playbook_id: u64,
-        options: Option<RequestOptions>,
-    ) -> Result<Response<Vec<Actor>>, ClientError> {
+        options: Option<HashMap<String, String>>,
+    ) -> Result<Vec<Actor>, ClientError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
-        self.client.get::<ActorsEndpoint>(&path, options)
+        let res = self.client.get::<ActorsEndpoint>(&path, options)?;
+        Ok(res.data.unwrap().data)
     }
 
     /// Retrieve a actor
@@ -77,9 +82,10 @@ impl Actors<'_> {
     /// # Arguments
     ///
     /// `actor_id`: The ID of the actor we want to retrieve
-    pub fn get(&self, actor_id: u64) -> Result<Response<Actor>, ClientError> {
+    pub fn get(&self, actor_id: u64) -> Result<Actor, ClientError> {
         let path = format!("/actors/{}", actor_id);
-        self.client.get::<ActorEndpoint>(&path, None)
+        let res = self.client.get::<ActorEndpoint>(&path, None)?;
+        Ok(res.data.unwrap().data)
     }
 
     /// Retrieve the log streams of actor
@@ -97,9 +103,10 @@ impl Actors<'_> {
     /// # Arguments
     ///
     /// `actor_id`: The actor id
-    pub fn info(&self, actor_id: u64) -> Result<Response<Value>, ClientError> {
+    pub fn info(&self, actor_id: u64) -> Result<Value, ClientError> {
         let path = format!("/actors/{}/info", actor_id);
-        self.client.get::<ValueEndpoint>(&path, None)
+        let res = self.client.get::<ValueEndpoint>(&path, None)?;
+        Ok(res.data.unwrap().data)
     }
 
     /// Retrieve actor's stats
@@ -107,8 +114,9 @@ impl Actors<'_> {
     /// # Arguments
     ///
     /// `actor_id`: The actor id
-    pub fn stats(&self, actor_id: u64) -> Result<Response<Value>, ClientError> {
+    pub fn stats(&self, actor_id: u64) -> Result<Value, ClientError> {
         let path = format!("/actors/{}/stats", actor_id);
-        self.client.get::<ValueEndpoint>(&path, None)
+        let res = self.client.get::<ValueEndpoint>(&path, None)?;
+        Ok(res.data.unwrap().data)
     }
 }

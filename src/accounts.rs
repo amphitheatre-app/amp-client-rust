@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::client::{Client, ClientError, Endpoint, Response};
+use amp_common::client::{Client, ClientError, Endpoint};
 use serde::{Deserialize, Serialize};
+
+use crate::Wrapper;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Account {
@@ -32,7 +34,7 @@ pub struct Account {
 struct AccountEndpoint;
 
 impl Endpoint for AccountEndpoint {
-    type Output = Account;
+    type Output = Wrapper<Account>;
 }
 
 /// The Accounts Service handles the account endpoint of the Amphitheatre API.
@@ -50,11 +52,12 @@ impl Accounts<'_> {
     /// ```no_run
     /// use amp_client::client::Client;
     ///
-    /// let client = Client::new("https://cloud.amphitheatre.app", "AUTH_TOKEN");
-    /// let response = client.accounts().me().unwrap();
-    /// let account = response.data.unwrap();
+    /// let token = Some(String::from("AUTH_TOKEN"));
+    /// let client = Client::new("https://cloud.amphitheatre.app", token);
+    /// let account = client.accounts().me().unwrap();
     /// ```
-    pub fn me(&self) -> Result<Response<Account>, ClientError> {
-        self.client.get::<AccountEndpoint>("/me", None)
+    pub fn me(&self) -> Result<Account, ClientError> {
+        let res = self.client.get::<AccountEndpoint>("/me", None)?;
+        Ok(res.data.unwrap().data)
     }
 }

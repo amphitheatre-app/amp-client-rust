@@ -20,9 +20,7 @@ mod common;
 fn me_success_with_account() {
     let setup = setup_mock_for("/me", "accounts/get-me-success", "GET");
     let client = setup.0;
-    let response = client.accounts().me().unwrap();
-
-    let account = response.data.unwrap();
+    let account = client.accounts().me().unwrap();
 
     assert_eq!(1, account.id);
     assert_eq!("example-account@example.com", account.email);
