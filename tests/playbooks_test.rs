@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use amp_client::playbooks::PlaybookPayload;
-use amp_common::schema::Manifest;
+use amp_common::schema::Source;
 
 use crate::common::setup_mock_for;
 mod common;
@@ -44,7 +44,7 @@ fn create_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        protagonist: Manifest::default(),
+        preface: Source::default(),
     };
 
     let playbook = client.playbooks().create(payload).unwrap();
@@ -78,7 +78,7 @@ fn update_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        protagonist: Manifest::default(),
+        preface: Source::default(),
     };
 
     let playbook = client.playbooks().update(playbook_id, payload).unwrap();
