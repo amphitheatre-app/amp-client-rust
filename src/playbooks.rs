@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Wrapper;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Playbook {
     /// The playbook ID in Amphitheatre.
     pub id: String,
