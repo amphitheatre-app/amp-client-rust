@@ -92,7 +92,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn get(&self, pid: &str, name: &str) -> Result<Actor, ClientError> {
-        let path = format!("/playbooks/{}/actors/{}", pid, name);
+        let path = format!("/actors/{}/{}", pid, name);
         let res = self.client.get::<ActorEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -104,7 +104,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn logs(&self, _pid: &str, _name: &str) -> String {
-        // let path = format!("/playbooks/{}/actors/{}/logs", pid, name);
+        // let path = format!("/actors/{}/{}/logs", pid, name);
         String::from("event stream (JSON)")
     }
 
@@ -115,7 +115,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn info(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
-        let path = format!("/playbooks/{}/actors/{}/info", pid, name);
+        let path = format!("/actors/{}/{}/info", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -127,7 +127,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn stats(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
-        let path = format!("/playbooks/{}/actors/{}/stats", pid, name);
+        let path = format!("/actors/{}/{}/stats", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -139,7 +139,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn sync(&self, pid: &str, name: &str, payload: SynchronizationRequest) -> Result<u16, ClientError> {
-        let path = format!("/playbooks/{}/actors/{}/sync", pid, name);
+        let path = format!("/actors/{}/{}/sync", pid, name);
         match serde_json::to_value(payload) {
             Ok(json) => {
                 let res = self

@@ -44,7 +44,7 @@ fn list_actors_test() {
 
 #[test]
 fn get_actor_test() {
-    let setup = setup_mock_for("/playbooks/1/actors/hello", "actors/get-actor-success", "GET");
+    let setup = setup_mock_for("/actors/1/hello", "actors/get-actor-success", "GET");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -60,11 +60,7 @@ fn get_actor_test() {
 
 #[test]
 fn get_actor_logs() {
-    let setup = setup_mock_for(
-        "/playbooks/1/actors/hello/logs",
-        "actors/get-actor-logs-success",
-        "GET",
-    );
+    let setup = setup_mock_for("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -76,11 +72,7 @@ fn get_actor_logs() {
 
 #[test]
 fn get_actor_info_test() {
-    let setup = setup_mock_for(
-        "/playbooks/1/actors/hello/info",
-        "actors/get-actor-info-success",
-        "GET",
-    );
+    let setup = setup_mock_for("/actors/1/hello/info", "actors/get-actor-info-success", "GET");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -97,11 +89,7 @@ fn get_actor_info_test() {
 
 #[test]
 fn get_actor_stats_test() {
-    let setup = setup_mock_for(
-        "/playbooks/1/actors/hello/stats",
-        "actors/get-actor-stats-success",
-        "GET",
-    );
+    let setup = setup_mock_for("/actors/1/hello/stats", "actors/get-actor-stats-success", "GET");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -116,11 +104,7 @@ fn get_actor_stats_test() {
 
 #[test]
 fn sync_actor_test() {
-    let setup = setup_mock_for(
-        "/playbooks/1/actors/hello/sync",
-        "actors/sync-actor-success",
-        "POST",
-    );
+    let setup = setup_mock_for("/actors/1/hello/sync", "actors/sync-actor-success", "POST");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
