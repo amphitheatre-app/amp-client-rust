@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::collections::HashMap;
+
+use amp_client::actors::SynchronizationRequest;
+
 use crate::common::setup_mock_for;
 mod common;
 
 #[test]
 fn list_actors_test() {
-    let playbook_id = 1;
+    let pid = "1";
     let setup = setup_mock_for(
-        format!("/playbooks/{}/actors", playbook_id).as_str(),
+        format!("/playbooks/{}/actors", pid).as_str(),
         "actors/list-actors-success",
         "GET",
     );
     let client = setup.0;
 
-    let actors = client.actors().list(playbook_id, None).unwrap();
+    let actors = client.actors().list(pid, None).unwrap();
 
     assert_eq!(2, actors.len());
 
@@ -40,11 +44,12 @@ fn list_actors_test() {
 
 #[test]
 fn get_actor_test() {
-    let setup = setup_mock_for("/actors/1", "actors/get-actor-success", "GET");
+    let setup = setup_mock_for("/playbooks/1/actors/hello", "actors/get-actor-success", "GET");
     let client = setup.0;
-    let actor_id = 1;
+    let pid = "1";
+    let name = "hello";
 
-    let actor = client.actors().get(actor_id).unwrap();
+    let actor = client.actors().get(pid, name).unwrap();
 
     assert_eq!(1, actor.id);
     assert_eq!("Default", actor.title);
@@ -55,22 +60,32 @@ fn get_actor_test() {
 
 #[test]
 fn get_actor_logs() {
-    let setup = setup_mock_for("/actors/1/logs", "actors/get-actor-logs-success", "GET");
+    let setup = setup_mock_for(
+        "/playbooks/1/actors/hello/logs",
+        "actors/get-actor-logs-success",
+        "GET",
+    );
     let client = setup.0;
-    let actor_id = 1;
+    let pid = "1";
+    let name = "hello";
 
-    let response = client.actors().logs(actor_id);
+    let response = client.actors().logs(pid, name);
 
     assert_eq!(String::from("event stream (JSON)"), response);
 }
 
 #[test]
 fn get_actor_info_test() {
-    let setup = setup_mock_for("/actors/1/info", "actors/get-actor-info-success", "GET");
+    let setup = setup_mock_for(
+        "/playbooks/1/actors/hello/info",
+        "actors/get-actor-info-success",
+        "GET",
+    );
     let client = setup.0;
-    let actor_id = 1;
+    let pid = "1";
+    let name = "hello";
 
-    let json = client.actors().info(actor_id).unwrap();
+    let json = client.actors().info(pid, name).unwrap();
 
     assert_eq!("RdqNLMXRiRsHJhmxKurR", json["environments"]["K3S_TOKEN"]);
     assert_eq!(
@@ -82,14 +97,43 @@ fn get_actor_info_test() {
 
 #[test]
 fn get_actor_stats_test() {
-    let setup = setup_mock_for("/actors/1/stats", "actors/get-actor-stats-success", "GET");
+    let setup = setup_mock_for(
+        "/playbooks/1/actors/hello/stats",
+        "actors/get-actor-stats-success",
+        "GET",
+    );
     let client = setup.0;
-    let actor_id = 1;
+    let pid = "1";
+    let name = "hello";
 
-    let json = client.actors().stats(actor_id).unwrap();
+    let json = client.actors().stats(pid, name).unwrap();
 
     assert_eq!("1.98%", json["CPU USAGE"]);
     assert_eq!("5.3MB / 43.7 MB", json["DISK READ/WRITE"]);
     assert_eq!("65.8MB", json["MEMORY USAGE"]);
     assert_eq!("5.7 kB / 3 kB", json["NETWORK I/O"]);
+}
+
+#[test]
+fn sync_actor_test() {
+    let setup = setup_mock_for(
+        "/playbooks/1/actors/hello/sync",
+        "actors/sync-actor-success",
+        "POST",
+    );
+    let client = setup.0;
+    let pid = "1";
+    let name = "hello";
+
+    let payload = SynchronizationRequest {
+        kind: "Create - File".to_string(),
+        paths: vec![String::from("/tmp/a.txt")],
+        attributes: HashMap::new(),
+        payload: vec![],
+    };
+
+    let response = client.actors().sync(pid, name, payload);
+    println!("{:?}", response);
+    assert!(response.is_ok());
+    assert_eq!(202, response.unwrap());
 }

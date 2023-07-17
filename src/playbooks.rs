@@ -99,9 +99,9 @@ impl Playbooks<'_> {
     ///
     /// # Arguments
     ///
-    /// `playbook_id`: The ID of the playbook we want to retrieve
-    pub fn get(&self, playbook_id: &str) -> Result<Playbook, ClientError> {
-        let path = format!("/playbooks/{}", playbook_id);
+    /// `pid`: The ID of the playbook we want to retrieve
+    pub fn get(&self, pid: &str) -> Result<Playbook, ClientError> {
+        let path = format!("/playbooks/{}", pid);
         let res = self.client.get::<PlaybookEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -110,10 +110,10 @@ impl Playbooks<'_> {
     ///
     /// # Arguments
     ///
-    /// `playbook_id`: The playbook id
+    /// `pid`: The playbook id
     /// `payload`: The `PlaybookPayload` with the information needed to update
-    pub fn update(&self, playbook_id: &str, payload: PlaybookPayload) -> Result<Playbook, ClientError> {
-        let path = format!("/playbooks/{}", playbook_id);
+    pub fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<Playbook, ClientError> {
+        let path = format!("/playbooks/{}", pid);
 
         match serde_json::to_value(payload) {
             Ok(json) => {
@@ -130,9 +130,9 @@ impl Playbooks<'_> {
     ///
     /// # Arguments
     ///
-    /// `playbook_id`: The playbook id
-    pub fn delete(&self, playbook_id: &str) -> Result<u16, ClientError> {
-        let path = format!("/playbooks/{}", playbook_id);
+    /// `pid`: The playbook id
+    pub fn delete(&self, pid: &str) -> Result<u16, ClientError> {
+        let path = format!("/playbooks/{}", pid);
         Ok(self.client.delete(&path)?.status)
     }
 
@@ -141,8 +141,8 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `playbook_id`: The playbook id
-    pub fn events(&self, _playbook_id: &str) -> String {
-        // let path = format!("/playbooks/{}/events", playbook_id);
+    pub fn events(&self, _pid: &str) -> String {
+        // let path = format!("/playbooks/{}/events", pid);
         String::from("event stream (JSON)")
     }
 
@@ -150,9 +150,9 @@ impl Playbooks<'_> {
     ///
     /// # Arguments
     ///
-    /// `playbook_id`: The playbook id
-    pub fn start(&self, playbook_id: &str) -> Result<u16, ClientError> {
-        let path = format!("/playbooks/{}/actions/start", playbook_id);
+    /// `pid`: The playbook id
+    pub fn start(&self, pid: &str) -> Result<u16, ClientError> {
+        let path = format!("/playbooks/{}/actions/start", pid);
         Ok(self.client.empty_post(&path)?.status)
     }
 
@@ -160,9 +160,9 @@ impl Playbooks<'_> {
     ///
     /// # Arguments
     ///
-    /// `playbook_id`: The playbook id
-    pub fn stop(&self, playbook_id: &str) -> Result<u16, ClientError> {
-        let path = format!("/playbooks/{}/actions/stop", playbook_id);
+    /// `pid`: The playbook id
+    pub fn stop(&self, pid: &str) -> Result<u16, ClientError> {
+        let path = format!("/playbooks/{}/actions/stop", pid);
         Ok(self.client.empty_post(&path)?.status)
     }
 }

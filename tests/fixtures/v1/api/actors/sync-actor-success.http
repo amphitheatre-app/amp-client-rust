@@ -1,8 +1,8 @@
-HTTP/1.1 204 No Content
+HTTP/1.1 202 Accepted
 Server: nginx
 Date: Tue, 19 Jan 2016 21:49:42 GMT
 Connection: keep-alive
-Status: 204 No Content
+Status: 202 Accepted
 X-RateLimit-Limit: 4000
 X-RateLimit-Remaining: 3999
 X-RateLimit-Reset: 1453243782

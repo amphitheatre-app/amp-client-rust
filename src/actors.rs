@@ -52,6 +52,14 @@ impl Endpoint for ValueEndpoint {
     type Output = Wrapper<Value>;
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SynchronizationRequest {
+    pub kind: String,
+    pub paths: Vec<String>,
+    pub attributes: HashMap<String, String>,
+    pub payload: Vec<u8>,
+}
+
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.
 ///
 /// See [API Documentation: playbook](https://docs.amphitheatre.app/api/actor)
@@ -69,7 +77,7 @@ impl Actors<'_> {
     ///             - Sort: `id`, `label`, `email`
     pub fn list(
         &self,
-        playbook_id: u64,
+        playbook_id: &str,
         options: Option<HashMap<String, String>>,
     ) -> Result<Vec<Actor>, ClientError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
@@ -81,9 +89,10 @@ impl Actors<'_> {
     ///
     /// # Arguments
     ///
-    /// `actor_id`: The ID of the actor we want to retrieve
-    pub fn get(&self, actor_id: u64) -> Result<Actor, ClientError> {
-        let path = format!("/actors/{}", actor_id);
+    /// `pid`: The ID of the playbook
+    /// `name`: The name of the actor
+    pub fn get(&self, pid: &str, name: &str) -> Result<Actor, ClientError> {
+        let path = format!("/playbooks/{}/actors/{}", pid, name);
         let res = self.client.get::<ActorEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -92,9 +101,10 @@ impl Actors<'_> {
     ///
     /// # Arguments
     ///
-    /// `actor_id`: The actor id
-    pub fn logs(&self, _actor_id: u64) -> String {
-        // let path = format!("/actors/{}/logs", actor_id);
+    /// `pid`: The ID of the playbook
+    /// `name`: The name of the actor
+    pub fn logs(&self, _pid: &str, _name: &str) -> String {
+        // let path = format!("/playbooks/{}/actors/{}/logs", pid, name);
         String::from("event stream (JSON)")
     }
 
@@ -102,9 +112,10 @@ impl Actors<'_> {
     ///
     /// # Arguments
     ///
-    /// `actor_id`: The actor id
-    pub fn info(&self, actor_id: u64) -> Result<Value, ClientError> {
-        let path = format!("/actors/{}/info", actor_id);
+    /// `pid`: The ID of the playbook
+    /// `name`: The name of the actor
+    pub fn info(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
+        let path = format!("/playbooks/{}/actors/{}/info", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
     }
@@ -113,10 +124,35 @@ impl Actors<'_> {
     ///
     /// # Arguments
     ///
-    /// `actor_id`: The actor id
-    pub fn stats(&self, actor_id: u64) -> Result<Value, ClientError> {
-        let path = format!("/actors/{}/stats", actor_id);
+    /// `pid`: The ID of the playbook
+    /// `name`: The name of the actor
+    pub fn stats(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
+        let path = format!("/playbooks/{}/actors/{}/stats", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
+    }
+
+    /// Sync the actor's source code
+    ///
+    /// # Arguments
+    ///
+    /// `pid`: The ID of the playbook
+    /// `name`: The name of the actor
+    pub fn sync(&self, pid: &str, name: &str, payload: SynchronizationRequest) -> Result<u16, ClientError> {
+        let path = format!("/playbooks/{}/actors/{}/sync", pid, name);
+        match serde_json::to_value(payload) {
+            Ok(json) => {
+                let res = self
+                    .client
+                    ._agent
+                    .post(&self.client.url(&path))
+                    .send_json(json)
+                    .map_err(|e| ClientError::Deserialization(e.to_string()))?;
+                Ok(res.status())
+            }
+            Err(_) => Err(ClientError::Deserialization(String::from(
+                "Cannot deserialize json payload",
+            ))),
+        }
     }
 }
