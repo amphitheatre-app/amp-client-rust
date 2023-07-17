@@ -56,8 +56,10 @@ impl Endpoint for ValueEndpoint {
 pub struct SynchronizationRequest {
     pub kind: String,
     pub paths: Vec<String>,
-    pub attributes: HashMap<String, String>,
-    pub payload: Vec<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attributes: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payload: Option<Vec<u8>>,
 }
 
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.

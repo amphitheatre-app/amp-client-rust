@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
-
 use amp_client::actors::SynchronizationRequest;
 
 use crate::common::setup_mock_for;
@@ -112,8 +110,8 @@ fn sync_actor_test() {
     let payload = SynchronizationRequest {
         kind: "Create - File".to_string(),
         paths: vec![String::from("/tmp/a.txt")],
-        attributes: HashMap::new(),
-        payload: vec![],
+        attributes: None,
+        payload: None,
     };
 
     let response = client.actors().sync(pid, name, payload);
