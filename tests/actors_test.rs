@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::sync::{EventKinds, Synchronization};
+use amp_common::sync::{EventKinds, Path, Synchronization};
 
 use crate::common::setup_mock_for;
 mod common;
@@ -109,7 +109,7 @@ fn sync_actor_test() {
 
     let payload = Synchronization {
         kind: EventKinds::Create,
-        paths: vec![String::from("a.txt")],
+        paths: vec![Path::File(String::from("a.txt"))],
         attributes: None,
         payload: None,
     };
