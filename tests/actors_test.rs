@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_client::actors::SynchronizationRequest;
+use amp_common::sync::{EventKinds, Synchronization};
 
 use crate::common::setup_mock_for;
 mod common;
@@ -107,9 +107,9 @@ fn sync_actor_test() {
     let pid = "1";
     let name = "hello";
 
-    let payload = SynchronizationRequest {
-        kind: "Create - File".to_string(),
-        paths: vec![String::from("/tmp/a.txt")],
+    let payload = Synchronization {
+        kind: EventKinds::Create,
+        paths: vec![String::from("a.txt")],
         attributes: None,
         payload: None,
     };

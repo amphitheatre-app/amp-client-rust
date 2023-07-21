@@ -15,6 +15,7 @@
 use std::collections::HashMap;
 
 use amp_common::client::{Client, ClientError, Endpoint};
+use amp_common::sync::Synchronization;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -50,16 +51,6 @@ struct ValueEndpoint;
 
 impl Endpoint for ValueEndpoint {
     type Output = Wrapper<Value>;
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct SynchronizationRequest {
-    pub kind: String,
-    pub paths: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub attributes: Option<HashMap<String, String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payload: Option<Vec<u8>>,
 }
 
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.
@@ -140,7 +131,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn sync(&self, pid: &str, name: &str, payload: SynchronizationRequest) -> Result<u16, ClientError> {
+    pub fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, ClientError> {
         let path = format!("/actors/{}/{}/sync", pid, name);
         match serde_json::to_value(payload) {
             Ok(json) => {
