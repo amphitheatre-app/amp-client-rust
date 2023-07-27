@@ -14,7 +14,7 @@
 
 use std::collections::HashMap;
 
-use amp_common::client::{Client, ClientError, Endpoint};
+use amp_common::http::{Client, Endpoint, HTTPError};
 use amp_common::schema::EitherCharacter;
 use serde::{Deserialize, Serialize};
 
@@ -72,7 +72,7 @@ impl Playbooks<'_> {
     ///
     /// `options`: The `RequestOptions`
     ///             - Sort: `id`, `label`, `email`
-    pub fn list(&self, options: Option<HashMap<String, String>>) -> Result<Vec<Playbook>, ClientError> {
+    pub fn list(&self, options: Option<HashMap<String, String>>) -> Result<Vec<Playbook>, HTTPError> {
         let res = self.client.get::<PlaybooksEndpoint>("/playbooks", options)?;
         Ok(res.data.unwrap().data)
     }
@@ -83,13 +83,13 @@ impl Playbooks<'_> {
     ///
     /// `payload`: the `PlaybookPayload` with the information needed to create
     /// the playbook
-    pub fn create(&self, payload: PlaybookPayload) -> Result<Playbook, ClientError> {
+    pub fn create(&self, payload: PlaybookPayload) -> Result<Playbook, HTTPError> {
         match serde_json::to_value(payload) {
             Ok(json) => {
                 let res = self.client.post::<PlaybookEndpoint>("/playbooks", json)?;
                 Ok(res.data.unwrap().data)
             }
-            Err(_) => Err(ClientError::Deserialization(String::from(
+            Err(_) => Err(HTTPError::Deserialization(String::from(
                 "Cannot deserialize json payload",
             ))),
         }
@@ -100,7 +100,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The ID of the playbook we want to retrieve
-    pub fn get(&self, pid: &str) -> Result<Playbook, ClientError> {
+    pub fn get(&self, pid: &str) -> Result<Playbook, HTTPError> {
         let path = format!("/playbooks/{}", pid);
         let res = self.client.get::<PlaybookEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
@@ -112,7 +112,7 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The playbook id
     /// `payload`: The `PlaybookPayload` with the information needed to update
-    pub fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<Playbook, ClientError> {
+    pub fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<Playbook, HTTPError> {
         let path = format!("/playbooks/{}", pid);
 
         match serde_json::to_value(payload) {
@@ -120,7 +120,7 @@ impl Playbooks<'_> {
                 let res = self.client.patch::<PlaybookEndpoint>(&path, json)?;
                 Ok(res.data.unwrap().data)
             }
-            Err(_) => Err(ClientError::Deserialization(String::from(
+            Err(_) => Err(HTTPError::Deserialization(String::from(
                 "Cannot deserialize json payload",
             ))),
         }
@@ -131,7 +131,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn delete(&self, pid: &str) -> Result<u16, ClientError> {
+    pub fn delete(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}", pid);
         Ok(self.client.delete(&path)?.status)
     }
@@ -151,7 +151,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn start(&self, pid: &str) -> Result<u16, ClientError> {
+    pub fn start(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}/actions/start", pid);
         Ok(self.client.empty_post(&path)?.status)
     }
@@ -161,7 +161,7 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn stop(&self, pid: &str) -> Result<u16, ClientError> {
+    pub fn stop(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}/actions/stop", pid);
         Ok(self.client.empty_post(&path)?.status)
     }

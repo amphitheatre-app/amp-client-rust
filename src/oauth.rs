@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::client::{Client, ClientError};
+use amp_common::http::{Client, HTTPError};
 use serde::{Deserialize, Serialize};
 
 /// Represents the payload used to exchange this information for the
@@ -90,7 +90,7 @@ impl OAuth<'_> {
     pub fn exchange_authorization_for_token(
         &self,
         payload: OAuthTokenPayload,
-    ) -> Result<AccessToken, ClientError> {
+    ) -> Result<AccessToken, HTTPError> {
         let path = "/oauth/access_token";
         let params = OAuthTokenParams {
             grant_type: "authorization_code".to_string(),
@@ -101,17 +101,17 @@ impl OAuth<'_> {
             state: payload.state,
         };
 
-        let value = serde_json::to_value(params).map_err(|e| ClientError::Deserialization(e.to_string()))?;
+        let value = serde_json::to_value(params).map_err(|e| HTTPError::Deserialization(e.to_string()))?;
 
         let response = self
             .client
             ._agent
             .post(&self.client.url(path))
             .send_json(value)
-            .map_err(|e| ClientError::Deserialization(e.to_string()))?;
+            .map_err(|e| HTTPError::Deserialization(e.to_string()))?;
 
         response
             .into_json::<AccessToken>()
-            .map_err(|e| ClientError::Deserialization(e.to_string()))
+            .map_err(|e| HTTPError::Deserialization(e.to_string()))
     }
 }

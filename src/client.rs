@@ -14,7 +14,7 @@
 
 use std::collections::HashMap;
 
-use amp_common::client::{ClientError, Endpoint, Response};
+use amp_common::http::{Endpoint, HTTPError, Response};
 
 use super::accounts::Accounts;
 use super::actors::Actors;
@@ -36,13 +36,13 @@ use super::playbooks::Playbooks;
 /// let account = client.accounts().me().unwrap();
 /// ```
 pub struct Client {
-    client: amp_common::client::Client,
+    client: amp_common::http::Client,
 }
 
 impl Client {
     pub fn new(base_url: &str, token: Option<String>) -> Self {
         Self {
-            client: amp_common::client::Client::new(base_url, token),
+            client: amp_common::http::Client::new(base_url, token),
         }
     }
 
@@ -57,7 +57,7 @@ impl Client {
         &self,
         path: &str,
         options: Option<HashMap<String, String>>,
-    ) -> Result<Response<E::Output>, ClientError> {
+    ) -> Result<Response<E::Output>, HTTPError> {
         self.client.get::<E>(path, options)
     }
 }

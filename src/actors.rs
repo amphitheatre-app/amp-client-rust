@@ -14,7 +14,7 @@
 
 use std::collections::HashMap;
 
-use amp_common::client::{Client, ClientError, Endpoint};
+use amp_common::http::{Client, Endpoint, HTTPError};
 use amp_common::sync::Synchronization;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -72,7 +72,7 @@ impl Actors<'_> {
         &self,
         playbook_id: &str,
         options: Option<HashMap<String, String>>,
-    ) -> Result<Vec<Actor>, ClientError> {
+    ) -> Result<Vec<Actor>, HTTPError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
         let res = self.client.get::<ActorsEndpoint>(&path, options)?;
         Ok(res.data.unwrap().data)
@@ -84,7 +84,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn get(&self, pid: &str, name: &str) -> Result<Actor, ClientError> {
+    pub fn get(&self, pid: &str, name: &str) -> Result<Actor, HTTPError> {
         let path = format!("/actors/{}/{}", pid, name);
         let res = self.client.get::<ActorEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
@@ -107,7 +107,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn info(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
+    pub fn info(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/info", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
@@ -119,7 +119,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn stats(&self, pid: &str, name: &str) -> Result<Value, ClientError> {
+    pub fn stats(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/stats", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
         Ok(res.data.unwrap().data)
@@ -131,7 +131,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, ClientError> {
+    pub fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, HTTPError> {
         let path = format!("/actors/{}/{}/sync", pid, name);
         match serde_json::to_value(payload) {
             Ok(json) => {
@@ -140,10 +140,10 @@ impl Actors<'_> {
                     ._agent
                     .post(&self.client.url(&path))
                     .send_json(json)
-                    .map_err(|e| ClientError::Deserialization(e.to_string()))?;
+                    .map_err(|e| HTTPError::Deserialization(e.to_string()))?;
                 Ok(res.status())
             }
-            Err(_) => Err(ClientError::Deserialization(String::from(
+            Err(_) => Err(HTTPError::Deserialization(String::from(
                 "Cannot deserialize json payload",
             ))),
         }

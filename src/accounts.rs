@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::client::{Client, ClientError, Endpoint};
+use amp_common::http::{Client, Endpoint, HTTPError};
 use serde::{Deserialize, Serialize};
 
 use crate::Wrapper;
@@ -56,7 +56,7 @@ impl Accounts<'_> {
     /// let client = Client::new("https://cloud.amphitheatre.app", token);
     /// let account = client.accounts().me().unwrap();
     /// ```
-    pub fn me(&self) -> Result<Account, ClientError> {
+    pub fn me(&self) -> Result<Account, HTTPError> {
         let res = self.client.get::<AccountEndpoint>("/me", None)?;
         Ok(res.data.unwrap().data)
     }
