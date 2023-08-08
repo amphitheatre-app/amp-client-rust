@@ -17,7 +17,7 @@
 use std::fs;
 
 use amp_client::client::Client;
-use mockito::{mock, Mock};
+use mockito::{Server, ServerGuard};
 
 /// Creates a mockserver and a client (changing the url of the client
 /// to that of the mockserver to capture the requests).
@@ -29,7 +29,7 @@ use mockito::{mock, Mock};
 /// `fixture`: the path to the fixture inside the `api` directory
 /// `path`: the path in the server (i.e. `/me`)
 /// `method`: the HTTP method we are going to use (GET, POST, DELETE, ...)
-pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, Mock) {
+pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
     let path = format!("/v1{}", path);
     let fixture = format!("./tests/fixtures/v1/api/{}.http", fixture);
 
@@ -39,7 +39,9 @@ pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, Mock)
     let status = &content[9..12];
     let body = lines.last();
 
-    let mock = mock(method, path.as_str())
+    let mut server = Server::new();
+    server
+        .mock(method, path.as_str())
         .with_header("x-ratelimit-limit", "2")
         .with_header("x-ratelimit-remaining", "2")
         .with_header("x-ratelimit-after", "never")
@@ -47,8 +49,8 @@ pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, Mock)
         .with_body(body.unwrap())
         .create();
 
-    let base_url = format!("{}/v1", mockito::server_url());
+    let base_url = format!("{}/v1", server.url());
     let client = Client::new(&base_url, Some("some-token".to_string()));
 
-    (client, mock)
+    (client, server)
 }
