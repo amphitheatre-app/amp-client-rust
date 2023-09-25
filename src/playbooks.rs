@@ -14,8 +14,10 @@
 
 use std::collections::HashMap;
 
-use amp_common::http::{Client, Endpoint, HTTPError};
-use amp_common::schema::EitherCharacter;
+use amp_common::{
+    http::{Client, Endpoint, HTTPError},
+    resource::Preface,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::Wrapper;
@@ -41,7 +43,7 @@ pub struct PlaybookPayload {
     /// The description of the playbook
     pub description: String,
     /// The leading character manifest of the playbook
-    pub preface: EitherCharacter,
+    pub preface: Preface,
     /// Whether the playbook is live or not
     pub live: bool,
 }

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_client::playbooks::PlaybookPayload;
-use amp_common::schema::EitherCharacter;
-
 use crate::common::setup_mock_for;
+use amp_client::playbooks::PlaybookPayload;
+use amp_common::resource::Preface;
 mod common;
 
 #[test]
@@ -44,7 +43,7 @@ fn create_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        preface: EitherCharacter::default(),
+        preface: Preface::default(),
         live: false,
     };
 
@@ -79,7 +78,7 @@ fn update_playbook_test() {
     let payload = PlaybookPayload {
         title: String::from("Default"),
         description: String::from("First"),
-        preface: EitherCharacter::default(),
+        preface: Preface::default(),
         live: false,
     };
 
