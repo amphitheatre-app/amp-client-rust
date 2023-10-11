@@ -44,8 +44,6 @@ pub struct PlaybookPayload {
     pub description: String,
     /// The leading character manifest of the playbook
     pub preface: Preface,
-    /// Whether the playbook is live or not
-    pub live: bool,
 }
 
 struct PlaybookEndpoint;

@@ -44,7 +44,6 @@ fn create_playbook_test() {
         title: String::from("Default"),
         description: String::from("First"),
         preface: Preface::default(),
-        live: false,
     };
 
     let playbook = client.playbooks().create(payload).unwrap();
@@ -79,7 +78,6 @@ fn update_playbook_test() {
         title: String::from("Default"),
         description: String::from("First"),
         preface: Preface::default(),
-        live: false,
     };
 
     let playbook = client.playbooks().update(playbook_id, payload).unwrap();
