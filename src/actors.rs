@@ -19,8 +19,6 @@ use amp_common::sync::Synchronization;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::Wrapper;
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Actor {
     /// The actor id
@@ -38,19 +36,19 @@ pub struct Actor {
 struct ActorEndpoint;
 
 impl Endpoint for ActorEndpoint {
-    type Output = Wrapper<Actor>;
+    type Output = Actor;
 }
 
 struct ActorsEndpoint;
 
 impl Endpoint for ActorsEndpoint {
-    type Output = Wrapper<Vec<Actor>>;
+    type Output = Vec<Actor>;
 }
 
 struct ValueEndpoint;
 
 impl Endpoint for ValueEndpoint {
-    type Output = Wrapper<Value>;
+    type Output = Value;
 }
 
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.
@@ -75,7 +73,7 @@ impl Actors<'_> {
     ) -> Result<Vec<Actor>, HTTPError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
         let res = self.client.get::<ActorsEndpoint>(&path, options)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Retrieve a actor
@@ -87,7 +85,7 @@ impl Actors<'_> {
     pub fn get(&self, pid: &str, name: &str) -> Result<Actor, HTTPError> {
         let path = format!("/actors/{}/{}", pid, name);
         let res = self.client.get::<ActorEndpoint>(&path, None)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Retrieve the log streams of actor
@@ -110,7 +108,7 @@ impl Actors<'_> {
     pub fn info(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/info", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Retrieve actor's stats
@@ -122,7 +120,7 @@ impl Actors<'_> {
     pub fn stats(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/stats", pid, name);
         let res = self.client.get::<ValueEndpoint>(&path, None)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Sync the actor's source code

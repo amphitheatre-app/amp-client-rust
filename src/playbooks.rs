@@ -20,8 +20,6 @@ use amp_common::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::Wrapper;
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Playbook {
     /// The playbook ID in Amphitheatre.
@@ -49,13 +47,13 @@ pub struct PlaybookPayload {
 struct PlaybookEndpoint;
 
 impl Endpoint for PlaybookEndpoint {
-    type Output = Wrapper<Playbook>;
+    type Output = Playbook;
 }
 
 struct PlaybooksEndpoint;
 
 impl Endpoint for PlaybooksEndpoint {
-    type Output = Wrapper<Vec<Playbook>>;
+    type Output = Vec<Playbook>;
 }
 
 /// The Playbooks Service handles the playbooks endpoint of the Amphitheatre API.
@@ -74,7 +72,7 @@ impl Playbooks<'_> {
     ///             - Sort: `id`, `label`, `email`
     pub fn list(&self, options: Option<HashMap<String, String>>) -> Result<Vec<Playbook>, HTTPError> {
         let res = self.client.get::<PlaybooksEndpoint>("/playbooks", options)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Create a playbook in the account.
@@ -87,7 +85,7 @@ impl Playbooks<'_> {
         match serde_json::to_value(payload) {
             Ok(json) => {
                 let res = self.client.post::<PlaybookEndpoint>("/playbooks", json)?;
-                Ok(res.data.unwrap().data)
+                Ok(res.data.unwrap())
             }
             Err(_) => Err(HTTPError::Deserialization(String::from(
                 "Cannot deserialize json payload",
@@ -103,7 +101,7 @@ impl Playbooks<'_> {
     pub fn get(&self, pid: &str) -> Result<Playbook, HTTPError> {
         let path = format!("/playbooks/{}", pid);
         let res = self.client.get::<PlaybookEndpoint>(&path, None)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 
     /// Update a playbook
@@ -118,7 +116,7 @@ impl Playbooks<'_> {
         match serde_json::to_value(payload) {
             Ok(json) => {
                 let res = self.client.patch::<PlaybookEndpoint>(&path, json)?;
-                Ok(res.data.unwrap().data)
+                Ok(res.data.unwrap())
             }
             Err(_) => Err(HTTPError::Deserialization(String::from(
                 "Cannot deserialize json payload",

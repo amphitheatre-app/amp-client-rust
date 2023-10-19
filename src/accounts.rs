@@ -15,8 +15,6 @@
 use amp_common::http::{Client, Endpoint, HTTPError};
 use serde::{Deserialize, Serialize};
 
-use crate::Wrapper;
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Account {
     /// The account ID
@@ -34,7 +32,7 @@ pub struct Account {
 struct AccountEndpoint;
 
 impl Endpoint for AccountEndpoint {
-    type Output = Wrapper<Account>;
+    type Output = Account;
 }
 
 /// The Accounts Service handles the account endpoint of the Amphitheatre API.
@@ -58,6 +56,6 @@ impl Accounts<'_> {
     /// ```
     pub fn me(&self) -> Result<Account, HTTPError> {
         let res = self.client.get::<AccountEndpoint>("/me", None)?;
-        Ok(res.data.unwrap().data)
+        Ok(res.data.unwrap())
     }
 }
