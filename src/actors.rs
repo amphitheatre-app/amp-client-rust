@@ -16,6 +16,7 @@ use std::collections::HashMap;
 
 use amp_common::http::{Client, Endpoint, HTTPError};
 use amp_common::sync::Synchronization;
+use reqwest_eventsource::EventSource;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -94,12 +95,12 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn logs(&self, _pid: &str, _name: &str) -> String {
-        // let path = format!("/actors/{}/{}/logs", pid, name);
-        String::from("event stream (JSON)")
+    pub fn logs(&self, pid: &str, name: &str) -> EventSource {
+        let path = format!("/actors/{}/{}/logs", pid, name);
+        EventSource::get(self.client.url(&path))
     }
 
-    /// Retrieve actor's info, including enviroments, volumes...
+    /// Retrieve actor's info, including environments, volumes...
     ///
     /// # Arguments
     ///

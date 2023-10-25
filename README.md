@@ -3,7 +3,7 @@
 Represents the Rust client for the Amphitheatre API.
 
 The client is your entrypoint to the Amphitheatre API. Using it you will be
-able to call all the enpoints of the Amphitheatre API and their respective functions.
+able to call all the endpoints of the Amphitheatre API and their respective functions.
 
 ## Examples
 

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 use amp_common::sync::{EventKinds, Path, Synchronization};
+use futures::StreamExt;
+use reqwest_eventsource::Event;
 
 use crate::common::setup_mock_for;
 mod common;
@@ -56,16 +58,25 @@ fn get_actor_test() {
     assert_eq!("2016-01-19T20:50:26Z", actor.updated_at);
 }
 
-#[test]
-fn get_actor_logs() {
+#[tokio::test]
+async fn get_actor_logs() {
     let setup = setup_mock_for("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET");
     let client = setup.0;
     let pid = "1";
     let name = "hello";
 
-    let response = client.actors().logs(pid, name);
+    let mut es = client.actors().logs(pid, name);
 
-    assert_eq!(String::from("event stream (JSON)"), response);
+    while let Some(event) = es.next().await {
+        match event {
+            Ok(Event::Open) => println!("Connection Open!"),
+            Ok(Event::Message(message)) => println!("Message: {:#?}", message),
+            Err(err) => {
+                println!("Error: {}", err);
+                es.close();
+            }
+        }
+    }
 }
 
 #[test]
