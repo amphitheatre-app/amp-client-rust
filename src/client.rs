@@ -62,18 +62,6 @@ impl Client {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::client::Client;
-    const BASE_URL: &str = "https://cloud.amphitheatre.app";
-
-    #[test]
-    fn creates_a_client() {
-        let token = Some("some-auth-token".to_string());
-        let _client = Client::new(BASE_URL, token);
-    }
-}
-
 impl Client {
     /// Returns the `accounts` services attached to this client
     pub fn accounts(&self) -> Accounts {
@@ -93,5 +81,17 @@ impl Client {
     /// Returns the `playbooks` service attached to this client
     pub fn playbooks(&self) -> Playbooks {
         Playbooks { client: &self.client }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::client::Client;
+    const BASE_URL: &str = "https://cloud.amphitheatre.app";
+
+    #[test]
+    fn creates_a_client() {
+        let token = Some("some-auth-token".to_string());
+        let _client = Client::new(BASE_URL, token);
     }
 }
