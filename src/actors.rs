@@ -20,7 +20,7 @@ use reqwest_eventsource::EventSource;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Actor {
     /// The actor id
     pub id: u64,
