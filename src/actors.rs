@@ -15,35 +15,21 @@
 use std::collections::HashMap;
 
 use amp_common::http::{Client, Endpoint, HTTPError};
+use amp_common::resource::ActorSpec;
 use amp_common::sync::Synchronization;
 use reqwest_eventsource::EventSource;
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Actor {
-    /// The actor id
-    pub id: u64,
-    /// The title of the actor
-    pub title: String,
-    /// The description of the actor
-    pub description: String,
-    /// When the actor was created in Amphitheatre.
-    pub created_at: String,
-    /// When the actor was last updated in Amphitheatre.
-    pub updated_at: String,
-}
 
 struct ActorEndpoint;
 
 impl Endpoint for ActorEndpoint {
-    type Output = Actor;
+    type Output = ActorSpec;
 }
 
 struct ActorsEndpoint;
 
 impl Endpoint for ActorsEndpoint {
-    type Output = Vec<Actor>;
+    type Output = Vec<ActorSpec>;
 }
 
 struct ValueEndpoint;
@@ -71,7 +57,7 @@ impl Actors<'_> {
         &self,
         playbook_id: &str,
         options: Option<HashMap<String, String>>,
-    ) -> Result<Vec<Actor>, HTTPError> {
+    ) -> Result<Vec<ActorSpec>, HTTPError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
         let res = self.client.get::<ActorsEndpoint>(&path, options)?;
         Ok(res.data.unwrap())
@@ -83,7 +69,7 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn get(&self, pid: &str, name: &str) -> Result<Actor, HTTPError> {
+    pub fn get(&self, pid: &str, name: &str) -> Result<ActorSpec, HTTPError> {
         let path = format!("/actors/{}/{}", pid, name);
         let res = self.client.get::<ActorEndpoint>(&path, None)?;
         Ok(res.data.unwrap())

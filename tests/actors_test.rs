@@ -31,15 +31,11 @@ fn list_actors_test() {
 
     let actors = client.actors().list(pid, None).unwrap();
 
-    assert_eq!(2, actors.len());
+    assert_eq!(1, actors.len());
 
     let actor = actors.first().unwrap();
 
-    assert_eq!(1, actor.id);
-    assert_eq!("Default", actor.title);
-    assert_eq!("First", actor.description);
-    assert_eq!("2016-01-19T20:50:26Z", actor.created_at);
-    assert_eq!("2016-01-19T20:50:26Z", actor.updated_at);
+    assert_eq!("amp-example-go", actor.name);
 }
 
 #[test]
@@ -51,11 +47,7 @@ fn get_actor_test() {
 
     let actor = client.actors().get(pid, name).unwrap();
 
-    assert_eq!(1, actor.id);
-    assert_eq!("Default", actor.title);
-    assert_eq!("First", actor.description);
-    assert_eq!("2016-01-19T20:50:26Z", actor.created_at);
-    assert_eq!("2016-01-19T20:50:26Z", actor.updated_at);
+    assert_eq!("amp-example-go", actor.name);
 }
 
 #[tokio::test]
