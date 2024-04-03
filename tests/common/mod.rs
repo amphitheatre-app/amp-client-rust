@@ -19,25 +19,13 @@ use std::fs;
 use amp_client::client::Client;
 use mockito::{Server, ServerGuard};
 
-/// Creates a mockserver and a client (changing the url of the client
-/// to that of the mockserver to capture the requests).
+/// Creates a mock server and a client (changing the url of the client
+/// to that of the mock server to capture the requests).
 ///
 /// It builds a response struct for the mock server using the fixture.
-///
-/// # Arguments
-///
-/// `fixture`: the path to the fixture inside the `api` directory
-/// `path`: the path in the server (i.e. `/me`)
-/// `method`: the HTTP method we are going to use (GET, POST, DELETE, ...)
 pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
     let path = format!("/v1{}", path);
-    let fixture = format!("./tests/fixtures/v1/api/{}.http", fixture);
-
-    let content = fs::read_to_string(fixture.as_str()).expect("Something went wrong: Couldn't read the file");
-
-    let lines = content.lines();
-    let status = &content[9..12];
-    let body = lines.last();
+    let (status, body) = parse_fixture(fixture);
 
     let mut server = Server::new();
     server
@@ -45,12 +33,46 @@ pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, Serve
         .with_header("x-ratelimit-limit", "2")
         .with_header("x-ratelimit-remaining", "2")
         .with_header("x-ratelimit-after", "never")
-        .with_status(status.parse().unwrap())
-        .with_body(body.unwrap())
+        .with_status(status)
+        .with_body(body)
         .create();
 
     let base_url = format!("{}/v1", server.url());
     let client = Client::new(&base_url, Some("some-token".to_string()));
 
     (client, server)
+}
+
+#[allow(dead_code)]
+pub async fn setup_async_mock_for(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
+    let path = format!("/v1{}", path);
+    let (status, body) = parse_fixture(fixture);
+
+    let mut server = Server::new_async().await;
+    server
+        .mock(method, path.as_str())
+        .with_header("x-ratelimit-limit", "2")
+        .with_header("x-ratelimit-remaining", "2")
+        .with_header("x-ratelimit-after", "never")
+        .with_status(status)
+        .with_body(body)
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/v1", server.url());
+    let client = Client::new(&base_url, Some("some-token".to_string()));
+
+    (client, server)
+}
+
+fn parse_fixture(fixture: &str) -> (usize, String) {
+    let fixture = format!("./tests/fixtures/v1/api/{}.http", fixture);
+
+    let content = fs::read_to_string(fixture.as_str()).expect("Something went wrong: Couldn't read the file");
+
+    let lines = content.lines();
+    let status = &content[9..12];
+    let body = lines.last().unwrap();
+
+    (status.parse().unwrap(), body.to_string())
 }

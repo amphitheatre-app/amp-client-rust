@@ -16,7 +16,7 @@ use amp_common::sync::{EventKinds, Path, Synchronization};
 use futures::StreamExt;
 use reqwest_eventsource::Event;
 
-use crate::common::setup_mock_for;
+use crate::common::{setup_async_mock_for, setup_mock_for};
 mod common;
 
 #[test]
@@ -52,7 +52,7 @@ fn get_actor_test() {
 
 #[tokio::test]
 async fn get_actor_logs() {
-    let setup = setup_mock_for("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET");
+    let setup = setup_async_mock_for("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
