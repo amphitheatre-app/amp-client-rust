@@ -13,14 +13,13 @@
 // limitations under the License.
 
 use amp_client::oauth::OAuthTokenPayload;
-
-use crate::common::setup_mock_for;
+use common::mock;
 
 mod common;
 
-#[test]
-fn exchange_authorization_for_token_test() {
-    let setup = setup_mock_for("/oauth/access_token", "oauth/access-token-success", "POST");
+#[tokio::test]
+async fn exchange_authorization_for_token_test() {
+    let setup = mock("/oauth/access_token", "oauth/access-token-success", "POST").await;
     let client = setup.0;
 
     let payload = OAuthTokenPayload {
@@ -31,7 +30,7 @@ fn exchange_authorization_for_token_test() {
         state: "state".to_string(),
     };
 
-    let access_token = match client.oauth().exchange_authorization_for_token(payload) {
+    let access_token = match client.oauth().exchange_authorization_for_token(payload).await {
         Ok(token) => token,
         Err(_) => {
             panic!("The token wasn't where we expected it to be")

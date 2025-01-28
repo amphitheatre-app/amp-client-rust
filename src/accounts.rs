@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::http::{Client, Endpoint, HTTPError};
+use amp_common::http::{endpoint::Endpoint, Client, HTTPError};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -29,9 +29,7 @@ pub struct Account {
     pub updated_at: String,
 }
 
-struct AccountEndpoint;
-
-impl Endpoint for AccountEndpoint {
+impl Endpoint for Account {
     type Output = Account;
 }
 
@@ -43,19 +41,23 @@ pub struct Accounts<'a> {
 }
 
 impl Accounts<'_> {
-    /// Retrieves the details about the current authenticated entity used to acces the API.
+    /// Retrieves the details about the current authenticated entity used to access the API.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// use amp_client::client::Client;
     ///
-    /// let token = Some(String::from("AUTH_TOKEN"));
-    /// let client = Client::new("https://cloud.amphitheatre.app", token);
-    /// let account = client.accounts().me().unwrap();
+    /// #[tokio::main]
+    /// async fn main() {
+    ///
+    ///     let token = Some(String::from("AUTH_TOKEN"));
+    ///     let client = Client::new("https://cloud.amphitheatre.app", token);
+    ///     let account = client.accounts().me().await.unwrap();
+    /// }
     /// ```
-    pub fn me(&self) -> Result<Account, HTTPError> {
-        let res = self.client.get::<AccountEndpoint>("/me", None)?;
+    pub async fn me(&self) -> Result<Account, HTTPError> {
+        let res = self.client.get::<Account>("/me", None).await?;
         Ok(res.data.unwrap())
     }
 }

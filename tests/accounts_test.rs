@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::common::setup_mock_for;
+use common::mock;
 
 mod common;
 
-#[test]
-fn me_success_with_account() {
-    let setup = setup_mock_for("/me", "accounts/get-me-success", "GET");
+#[tokio::test]
+async fn me_success_with_account() {
+    let setup = mock("/me", "accounts/get-me-success", "GET").await;
     let client = setup.0;
-    let account = client.accounts().me().unwrap();
+    let account = client.accounts().me().await.unwrap();
 
     assert_eq!(1, account.id);
     assert_eq!("example-account@example.com", account.email);

@@ -16,20 +16,21 @@ use amp_common::sync::{EventKinds, Path, Synchronization};
 use futures::StreamExt;
 use reqwest_eventsource::Event;
 
-use crate::common::{setup_async_mock_for, setup_mock_for};
+use crate::common::mock;
 mod common;
 
-#[test]
-fn list_actors_test() {
+#[tokio::test]
+async fn list_actors_test() {
     let pid = "1";
-    let setup = setup_mock_for(
+    let setup = mock(
         format!("/playbooks/{}/actors", pid).as_str(),
         "actors/list-actors-success",
         "GET",
-    );
+    )
+    .await;
     let client = setup.0;
 
-    let actors = client.actors().list(pid, None).unwrap();
+    let actors = client.actors().list(pid, None).await.unwrap();
 
     assert_eq!(1, actors.len());
 
@@ -38,21 +39,21 @@ fn list_actors_test() {
     assert_eq!("amp-example-go", actor.name);
 }
 
-#[test]
-fn get_actor_test() {
-    let setup = setup_mock_for("/actors/1/hello", "actors/get-actor-success", "GET");
+#[tokio::test]
+async fn get_actor_test() {
+    let setup = mock("/actors/1/hello", "actors/get-actor-success", "GET").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
 
-    let actor = client.actors().get(pid, name).unwrap();
+    let actor = client.actors().get(pid, name).await.unwrap();
 
     assert_eq!("amp-example-go", actor.name);
 }
 
 #[tokio::test]
 async fn get_actor_logs() {
-    let setup = setup_async_mock_for("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET").await;
+    let setup = mock("/actors/1/hello/logs", "actors/get-actor-logs-success", "GET").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -71,14 +72,14 @@ async fn get_actor_logs() {
     }
 }
 
-#[test]
-fn get_actor_info_test() {
-    let setup = setup_mock_for("/actors/1/hello/info", "actors/get-actor-info-success", "GET");
+#[tokio::test]
+async fn get_actor_info_test() {
+    let setup = mock("/actors/1/hello/info", "actors/get-actor-info-success", "GET").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
 
-    let json = client.actors().info(pid, name).unwrap();
+    let json = client.actors().info(pid, name).await.unwrap();
 
     assert_eq!("RdqNLMXRiRsHJhmxKurR", json["environments"]["K3S_TOKEN"]);
     assert_eq!(
@@ -88,14 +89,14 @@ fn get_actor_info_test() {
     assert_eq!("0.0.0.0:42397", json["port"]["6443/tcp"]);
 }
 
-#[test]
-fn get_actor_stats_test() {
-    let setup = setup_mock_for("/actors/1/hello/stats", "actors/get-actor-stats-success", "GET");
+#[tokio::test]
+async fn get_actor_stats_test() {
+    let setup = mock("/actors/1/hello/stats", "actors/get-actor-stats-success", "GET").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
 
-    let json = client.actors().stats(pid, name).unwrap();
+    let json = client.actors().stats(pid, name).await.unwrap();
 
     assert_eq!("1.98%", json["CPU USAGE"]);
     assert_eq!("5.3MB / 43.7 MB", json["DISK READ/WRITE"]);
@@ -103,9 +104,9 @@ fn get_actor_stats_test() {
     assert_eq!("5.7 kB / 3 kB", json["NETWORK I/O"]);
 }
 
-#[test]
-fn sync_actor_test() {
-    let setup = setup_mock_for("/actors/1/hello/sync", "actors/sync-actor-success", "POST");
+#[tokio::test]
+async fn sync_actor_test() {
+    let setup = mock("/actors/1/hello/sync", "actors/sync-actor-success", "POST").await;
     let client = setup.0;
     let pid = "1";
     let name = "hello";
@@ -117,7 +118,7 @@ fn sync_actor_test() {
         payload: None,
     };
 
-    let response = client.actors().sync(pid, name, payload);
+    let response = client.actors().sync(pid, name, payload).await;
     println!("{:?}", response);
     assert!(response.is_ok());
     assert_eq!(202, response.unwrap());

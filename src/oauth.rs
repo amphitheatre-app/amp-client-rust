@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use amp_common::http::{Client, HTTPError};
+use amp_common::http::{endpoint::Endpoint, Client, HTTPError};
 use serde::{Deserialize, Serialize};
 
 /// Represents the payload used to exchange this information for the
@@ -54,6 +54,10 @@ pub struct AccessToken {
     pub token_type: String,
 }
 
+impl Endpoint for AccessToken {
+    type Output = Self;
+}
+
 /// The Oauth Service is used to request access to the API
 ///
 /// See [API Documentation: oauth](https://docs.amphitheatre.app/api/oauth/)
@@ -71,28 +75,31 @@ impl OAuth<'_> {
     /// use amp_client::client::Client;
     /// use amp_client::oauth::OAuthTokenPayload;
     ///
-    /// let token = Some(String::from("AUTH_TOKEN"));
-    /// let client = Client::new("https://cloud.amphitheatre.app", token);
-    /// let payload = OAuthTokenPayload {
-    ///     client_id: "id".to_string(),
-    ///     client_secret: "secret".to_string(),
-    ///     code: "code".to_string(),
-    ///     redirect_uri: "/redirect_uri".to_string(),
-    ///     state: "state".to_string(),
-    /// };
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let token = Some(String::from("AUTH_TOKEN"));
+    ///     let client = Client::new("https://cloud.amphitheatre.app", token);
+    ///     let payload = OAuthTokenPayload {
+    ///         client_id: "id".to_string(),
+    ///         client_secret: "secret".to_string(),
+    ///         code: "code".to_string(),
+    ///         redirect_uri: "/redirect_uri".to_string(),
+    ///         state: "state".to_string(),
+    ///     };
     ///
-    /// let access_token = client.oauth().exchange_authorization_for_token(payload);
+    ///     let access_token = client.oauth().exchange_authorization_for_token(payload).await.unwrap();
+    /// }
     /// ```
     ///
     /// # Attributes
     ///
     /// `payload`: The `OAuthTokenPayload` with the necessary information to get the access token.
-    pub fn exchange_authorization_for_token(
+    pub async fn exchange_authorization_for_token(
         &self,
         payload: OAuthTokenPayload,
     ) -> Result<AccessToken, HTTPError> {
         let path = "/oauth/access_token";
-        let params = OAuthTokenParams {
+        let data = OAuthTokenParams {
             grant_type: "authorization_code".to_string(),
             client_id: payload.client_id,
             client_secret: payload.client_secret,
@@ -101,17 +108,10 @@ impl OAuth<'_> {
             state: payload.state,
         };
 
-        let value = serde_json::to_value(params).map_err(|e| HTTPError::Deserialization(e.to_string()))?;
-
-        let response = self
+        let res = self
             .client
-            ._agent
-            .post(&self.client.url(path))
-            .send_json(value)
-            .map_err(|e| HTTPError::Deserialization(e.to_string()))?;
-
-        response
-            .into_json::<AccessToken>()
-            .map_err(|e| HTTPError::Deserialization(e.to_string()))
+            .post::<AccessToken, OAuthTokenParams>(path, &data)
+            .await?;
+        Ok(res.data.unwrap())
     }
 }

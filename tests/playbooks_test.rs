@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::common::setup_mock_for;
 use amp_client::playbooks::PlaybookPayload;
 use amp_common::resource::Preface;
+use common::mock;
 mod common;
 
-#[test]
-fn list_playbooks_test() {
-    let setup = setup_mock_for("/playbooks", "playbooks/list-playbooks-success", "GET");
+#[tokio::test]
+async fn list_playbooks_test() {
+    let setup = mock("/playbooks", "playbooks/list-playbooks-success", "GET").await;
     let client = setup.0;
 
-    let playbooks = client.playbooks().list(None).unwrap();
+    let playbooks = client.playbooks().list(None).await.unwrap();
 
     assert_eq!(1, playbooks.len());
 
@@ -35,9 +35,9 @@ fn list_playbooks_test() {
     // assert_eq!("2016-01-19T20:50:26Z", playbook.updated_at);
 }
 
-#[test]
-fn create_playbook_test() {
-    let setup = setup_mock_for("/playbooks", "playbooks/create-playbook-created", "POST");
+#[tokio::test]
+async fn create_playbook_test() {
+    let setup = mock("/playbooks", "playbooks/create-playbook-created", "POST").await;
     let client = setup.0;
 
     let payload = PlaybookPayload {
@@ -46,7 +46,7 @@ fn create_playbook_test() {
         preface: Preface::default(),
     };
 
-    let playbook = client.playbooks().create(payload).unwrap();
+    let playbook = client.playbooks().create(payload).await.unwrap();
 
     assert_eq!("a82abba3-df2f-4608-b1a5-9e058ff80468", playbook.id);
     assert_eq!("Untitled", playbook.title);
@@ -55,17 +55,18 @@ fn create_playbook_test() {
     // assert_eq!("2016-01-19T20:50:26Z", playbook.updated_at);
 }
 
-#[test]
-fn get_playbook_test() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn get_playbook_test() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468",
         "playbooks/get-playbook-success",
         "GET",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
-    let playbook = client.playbooks().get(playbook_id).unwrap();
+    let playbook = client.playbooks().get(playbook_id).await.unwrap();
 
     assert_eq!("a82abba3-df2f-4608-b1a5-9e058ff80468", playbook.id);
     assert_eq!("Untitled", playbook.title);
@@ -74,13 +75,14 @@ fn get_playbook_test() {
     // assert_eq!("2016-01-19T20:50:26Z", playbook.updated_at);
 }
 
-#[test]
-fn update_playbook_test() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn update_playbook_test() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468",
         "playbooks/update-playbook-success",
         "PATCH",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
@@ -90,7 +92,7 @@ fn update_playbook_test() {
         preface: Preface::default(),
     };
 
-    let playbook = client.playbooks().update(playbook_id, payload).unwrap();
+    let playbook = client.playbooks().update(playbook_id, payload).await.unwrap();
 
     assert_eq!("a82abba3-df2f-4608-b1a5-9e058ff80468", playbook.id);
     assert_eq!("Untitled", playbook.title);
@@ -99,29 +101,31 @@ fn update_playbook_test() {
     // assert_eq!("2016-01-19T20:50:26Z", playbook.updated_at);
 }
 
-#[test]
-fn delete_playbook_test() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn delete_playbook_test() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468",
         "playbooks/delete-playbook-success",
         "DELETE",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
-    let response = client.playbooks().delete(playbook_id);
+    let response = client.playbooks().delete(playbook_id).await;
 
     assert!(response.is_ok());
     assert_eq!(204, response.unwrap());
 }
 
-#[test]
-fn get_playbook_events() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn get_playbook_events() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468/events",
         "playbooks/get-playbook-events-success",
         "GET",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
@@ -130,33 +134,35 @@ fn get_playbook_events() {
     assert_eq!(String::from("event stream (JSON)"), response);
 }
 
-#[test]
-fn start_playbook_test() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn start_playbook_test() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468/actions/start",
         "playbooks/start-playbook-success",
         "POST",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
-    let response = client.playbooks().start(playbook_id);
+    let response = client.playbooks().start(playbook_id).await;
 
     assert!(response.is_ok());
     assert_eq!(204, response.unwrap());
 }
 
-#[test]
-fn stop_playbook_test() {
-    let setup = setup_mock_for(
+#[tokio::test]
+async fn stop_playbook_test() {
+    let setup = mock(
         "/playbooks/a82abba3-df2f-4608-b1a5-9e058ff80468/actions/stop",
         "playbooks/stop-playbook-success",
         "POST",
-    );
+    )
+    .await;
     let client = setup.0;
     let playbook_id = "a82abba3-df2f-4608-b1a5-9e058ff80468";
 
-    let response = client.playbooks().stop(playbook_id);
+    let response = client.playbooks().stop(playbook_id).await;
 
     assert!(response.is_ok());
     assert_eq!(204, response.unwrap());

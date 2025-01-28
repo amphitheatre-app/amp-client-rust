@@ -14,7 +14,8 @@
 
 use std::collections::HashMap;
 
-use amp_common::http::{Client, Endpoint, HTTPError};
+use amp_common::http::endpoint::{Empty, JsonValue};
+use amp_common::http::{endpoint::Endpoint, Client, HTTPError};
 use amp_common::resource::ActorSpec;
 use amp_common::sync::Synchronization;
 use reqwest_eventsource::EventSource;
@@ -32,12 +33,6 @@ impl Endpoint for ActorsEndpoint {
     type Output = Vec<ActorSpec>;
 }
 
-struct ValueEndpoint;
-
-impl Endpoint for ValueEndpoint {
-    type Output = Value;
-}
-
 /// The Actors Service handles the actors endpoint of the Amphitheatre API.
 ///
 /// See [API Documentation: playbook](https://docs.amphitheatre.app/api/actor)
@@ -53,13 +48,13 @@ impl Actors<'_> {
     /// `playbook_id`: The playbook id
     /// `options`: The `HashMap<String, String>`
     ///             - Sort: `id`, `label`, `email`
-    pub fn list(
+    pub async fn list(
         &self,
         playbook_id: &str,
         options: Option<HashMap<String, String>>,
     ) -> Result<Vec<ActorSpec>, HTTPError> {
         let path = format!("/playbooks/{}/actors", playbook_id);
-        let res = self.client.get::<ActorsEndpoint>(&path, options)?;
+        let res = self.client.get::<ActorsEndpoint>(&path, options).await?;
         Ok(res.data.unwrap())
     }
 
@@ -69,9 +64,9 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn get(&self, pid: &str, name: &str) -> Result<ActorSpec, HTTPError> {
+    pub async fn get(&self, pid: &str, name: &str) -> Result<ActorSpec, HTTPError> {
         let path = format!("/actors/{}/{}", pid, name);
-        let res = self.client.get::<ActorEndpoint>(&path, None)?;
+        let res = self.client.get::<ActorEndpoint>(&path, None).await?;
         Ok(res.data.unwrap())
     }
 
@@ -83,7 +78,7 @@ impl Actors<'_> {
     /// `name`: The name of the actor
     pub fn logs(&self, pid: &str, name: &str) -> EventSource {
         let path = format!("/actors/{}/{}/logs", pid, name);
-        EventSource::get(self.client.url(&path))
+        EventSource::get(self.client.url(&path).expect("Invalid URL"))
     }
 
     /// Retrieve actor's info, including environments, volumes...
@@ -92,9 +87,9 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn info(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
+    pub async fn info(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/info", pid, name);
-        let res = self.client.get::<ValueEndpoint>(&path, None)?;
+        let res = self.client.get::<JsonValue>(&path, None).await?;
         Ok(res.data.unwrap())
     }
 
@@ -104,9 +99,9 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn stats(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
+    pub async fn stats(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
         let path = format!("/actors/{}/{}/stats", pid, name);
-        let res = self.client.get::<ValueEndpoint>(&path, None)?;
+        let res = self.client.get::<JsonValue>(&path, None).await?;
         Ok(res.data.unwrap())
     }
 
@@ -116,21 +111,13 @@ impl Actors<'_> {
     ///
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
-    pub fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, HTTPError> {
+    pub async fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, HTTPError> {
         let path = format!("/actors/{}/{}/sync", pid, name);
-        match serde_json::to_value(payload) {
-            Ok(json) => {
-                let res = self
-                    .client
-                    ._agent
-                    .post(&self.client.url(&path))
-                    .send_json(json)
-                    .map_err(|e| HTTPError::Deserialization(e.to_string()))?;
-                Ok(res.status())
-            }
-            Err(_) => Err(HTTPError::Deserialization(String::from(
-                "Cannot deserialize json payload",
-            ))),
-        }
+        let res = self
+            .client
+            .post::<Empty, Synchronization>(&path, &payload)
+            .await?;
+
+        Ok(res.status.as_u16())
     }
 }

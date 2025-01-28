@@ -14,8 +14,6 @@
 //
 // Heavily inspired by https://github.com/dnsimple/dnsimple-rust
 
-// use serde::{Deserialize, Serialize};
-
 pub mod accounts;
 pub mod actors;
 pub mod client;

@@ -15,10 +15,14 @@
 use std::collections::HashMap;
 
 use amp_common::{
-    http::{Client, Endpoint, HTTPError},
+    http::{
+        endpoint::{Empty, Endpoint},
+        Client, HTTPError,
+    },
     resource::{PlaybookSpec, Preface},
 };
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct PlaybookPayload {
@@ -56,8 +60,14 @@ impl Playbooks<'_> {
     ///
     /// `options`: The `RequestOptions`
     ///             - Sort: `id`, `label`, `email`
-    pub fn list(&self, options: Option<HashMap<String, String>>) -> Result<Vec<PlaybookSpec>, HTTPError> {
-        let res = self.client.get::<PlaybooksEndpoint>("/playbooks", options)?;
+    pub async fn list(
+        &self,
+        options: Option<HashMap<String, String>>,
+    ) -> Result<Vec<PlaybookSpec>, HTTPError> {
+        let res = self
+            .client
+            .get::<PlaybooksEndpoint>("/playbooks", options)
+            .await?;
         Ok(res.data.unwrap())
     }
 
@@ -67,16 +77,12 @@ impl Playbooks<'_> {
     ///
     /// `payload`: the `PlaybookPayload` with the information needed to create
     /// the playbook
-    pub fn create(&self, payload: PlaybookPayload) -> Result<PlaybookSpec, HTTPError> {
-        match serde_json::to_value(payload) {
-            Ok(json) => {
-                let res = self.client.post::<PlaybookEndpoint>("/playbooks", json)?;
-                Ok(res.data.unwrap())
-            }
-            Err(_) => Err(HTTPError::Deserialization(String::from(
-                "Cannot deserialize json payload",
-            ))),
-        }
+    pub async fn create(&self, payload: PlaybookPayload) -> Result<PlaybookSpec, HTTPError> {
+        let res = self
+            .client
+            .post::<PlaybookEndpoint, PlaybookPayload>("/playbooks", &payload)
+            .await?;
+        Ok(res.data.unwrap())
     }
 
     /// Retrieve a playbook
@@ -84,9 +90,9 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The ID of the playbook we want to retrieve
-    pub fn get(&self, pid: &str) -> Result<PlaybookSpec, HTTPError> {
+    pub async fn get(&self, pid: &str) -> Result<PlaybookSpec, HTTPError> {
         let path = format!("/playbooks/{}", pid);
-        let res = self.client.get::<PlaybookEndpoint>(&path, None)?;
+        let res = self.client.get::<PlaybookEndpoint>(&path, None).await?;
         Ok(res.data.unwrap())
     }
 
@@ -96,18 +102,13 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The playbook id
     /// `payload`: The `PlaybookPayload` with the information needed to update
-    pub fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<PlaybookSpec, HTTPError> {
+    pub async fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<PlaybookSpec, HTTPError> {
         let path = format!("/playbooks/{}", pid);
-
-        match serde_json::to_value(payload) {
-            Ok(json) => {
-                let res = self.client.patch::<PlaybookEndpoint>(&path, json)?;
-                Ok(res.data.unwrap())
-            }
-            Err(_) => Err(HTTPError::Deserialization(String::from(
-                "Cannot deserialize json payload",
-            ))),
-        }
+        let res = self
+            .client
+            .patch::<PlaybookEndpoint, PlaybookPayload>(&path, &payload)
+            .await?;
+        Ok(res.data.unwrap())
     }
 
     /// Delete a playbook
@@ -115,9 +116,9 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn delete(&self, pid: &str) -> Result<u16, HTTPError> {
+    pub async fn delete(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}", pid);
-        Ok(self.client.delete(&path)?.status)
+        Ok(self.client.delete::<Empty>(&path).await?.status.as_u16())
     }
 
     /// Retrieve the event streams of playbook
@@ -135,9 +136,14 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn start(&self, pid: &str) -> Result<u16, HTTPError> {
+    pub async fn start(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}/actions/start", pid);
-        Ok(self.client.empty_post(&path)?.status)
+        Ok(self
+            .client
+            .post::<Empty, Value>(&path, &json!(null))
+            .await?
+            .status
+            .as_u16())
     }
 
     /// Stop a playbook
@@ -145,8 +151,13 @@ impl Playbooks<'_> {
     /// # Arguments
     ///
     /// `pid`: The playbook id
-    pub fn stop(&self, pid: &str) -> Result<u16, HTTPError> {
+    pub async fn stop(&self, pid: &str) -> Result<u16, HTTPError> {
         let path = format!("/playbooks/{}/actions/stop", pid);
-        Ok(self.client.empty_post(&path)?.status)
+        Ok(self
+            .client
+            .post::<Empty, Value>(&path, &json!(null))
+            .await?
+            .status
+            .as_u16())
     }
 }

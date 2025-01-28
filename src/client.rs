@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
-
-use amp_common::http::{Endpoint, HTTPError, Response};
+use amp_common::http::Client as HTTPClient;
 
 use super::accounts::Accounts;
 use super::actors::Actors;
@@ -31,34 +29,22 @@ use super::playbooks::Playbooks;
 /// ```no_run
 /// use amp_client::client::Client;
 ///
-/// let token = Some(String::from("AUTH_TOKEN"));
-/// let client = Client::new("https://cloud.amphitheatre.app", token);
-/// let account = client.accounts().me().unwrap();
+/// #[tokio::main]
+/// async fn main() {
+///     let token = Some(String::from("AUTH_TOKEN"));
+///     let client = Client::new("https://cloud.amphitheatre.app", token);
+///     let account = client.accounts().me().await.unwrap();
+/// }
 /// ```
 pub struct Client {
-    client: amp_common::http::Client,
+    client: HTTPClient,
 }
 
 impl Client {
     pub fn new(base_url: &str, token: Option<String>) -> Self {
         Self {
-            client: amp_common::http::Client::new(base_url, token),
+            client: HTTPClient::new(base_url, token).expect("Failed to create HTTP client"),
         }
-    }
-
-    /// Sends a GET request to the Amphitheatre API
-    ///
-    /// # Arguments
-    ///
-    /// `path`: the path to the endpoint
-    /// `options`: optionally a `RequestOptions` with things like pagination,
-    /// filtering and sorting
-    pub fn get<E: Endpoint>(
-        &self,
-        path: &str,
-        options: Option<HashMap<String, String>>,
-    ) -> Result<Response<E::Output>, HTTPError> {
-        self.client.get::<E>(path, options)
     }
 }
 

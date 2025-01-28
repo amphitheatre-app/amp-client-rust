@@ -23,34 +23,15 @@ use mockito::{Server, ServerGuard};
 /// to that of the mock server to capture the requests).
 ///
 /// It builds a response struct for the mock server using the fixture.
-pub fn setup_mock_for(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
-    let path = format!("/v1{}", path);
-    let (status, body) = parse_fixture(fixture);
-
-    let mut server = Server::new();
-    server
-        .mock(method, path.as_str())
-        .with_header("x-ratelimit-limit", "2")
-        .with_header("x-ratelimit-remaining", "2")
-        .with_header("x-ratelimit-after", "never")
-        .with_status(status)
-        .with_body(body)
-        .create();
-
-    let base_url = format!("{}/v1", server.url());
-    let client = Client::new(&base_url, Some("some-token".to_string()));
-
-    (client, server)
-}
-
 #[allow(dead_code)]
-pub async fn setup_async_mock_for(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
+pub async fn mock(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
     let path = format!("/v1{}", path);
     let (status, body) = parse_fixture(fixture);
 
     let mut server = Server::new_async().await;
     server
         .mock(method, path.as_str())
+        .match_query(mockito::Matcher::Any)
         .with_header("x-ratelimit-limit", "2")
         .with_header("x-ratelimit-remaining", "2")
         .with_header("x-ratelimit-after", "never")
