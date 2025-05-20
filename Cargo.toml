@@ -1,7 +1,7 @@
 [package]
 name = "amp-client"
 description = "The Amphitheatre API client for Rust"
-version = "0.10.1"
+version = "0.10.2"
 edition = "2021"
 license = "Apache-2.0"
 homepage = "https://amphitheatre.app"
@@ -10,13 +10,13 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-amp-common = { git = "https://github.com/amphitheatre-app/common", tag = "v0.10.3" }
-futures = "0.3.30"
+amp-common = { git = "https://github.com/amphitheatre-app/common", tag = "v0.10.4" }
+futures = "0.3.31"
 reqwest-eventsource = "0.6.0"
-serde = { version = "1.0.197", features = ["derive"] }
-serde_json = { version = "1.0.115", features = ["raw_value"] }
-tokio = { version = "1.37.0", features = ["full"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.140", features = ["raw_value"] }
+tokio = { version = "1.45.0", features = ["full"] }
 
 [dev-dependencies]
 assert_matches = "1.5.0"
-mockito = "1.4.0"
+mockito = "1.7.0"
