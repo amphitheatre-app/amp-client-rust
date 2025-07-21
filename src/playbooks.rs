@@ -91,7 +91,7 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The ID of the playbook we want to retrieve
     pub async fn get(&self, pid: &str) -> Result<PlaybookSpec, HTTPError> {
-        let path = format!("/playbooks/{}", pid);
+        let path = format!("/playbooks/{pid}");
         let res = self.client.get::<PlaybookEndpoint>(&path, None).await?;
         Ok(res.data.unwrap())
     }
@@ -103,7 +103,7 @@ impl Playbooks<'_> {
     /// `pid`: The playbook id
     /// `payload`: The `PlaybookPayload` with the information needed to update
     pub async fn update(&self, pid: &str, payload: PlaybookPayload) -> Result<PlaybookSpec, HTTPError> {
-        let path = format!("/playbooks/{}", pid);
+        let path = format!("/playbooks/{pid}");
         let res = self
             .client
             .patch::<PlaybookEndpoint, PlaybookPayload>(&path, &payload)
@@ -117,7 +117,7 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The playbook id
     pub async fn delete(&self, pid: &str) -> Result<u16, HTTPError> {
-        let path = format!("/playbooks/{}", pid);
+        let path = format!("/playbooks/{pid}");
         Ok(self.client.delete::<Empty>(&path).await?.status.as_u16())
     }
 
@@ -137,7 +137,7 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The playbook id
     pub async fn start(&self, pid: &str) -> Result<u16, HTTPError> {
-        let path = format!("/playbooks/{}/actions/start", pid);
+        let path = format!("/playbooks/{pid}/actions/start");
         Ok(self
             .client
             .post::<Empty, Value>(&path, &json!(null))
@@ -152,7 +152,7 @@ impl Playbooks<'_> {
     ///
     /// `pid`: The playbook id
     pub async fn stop(&self, pid: &str) -> Result<u16, HTTPError> {
-        let path = format!("/playbooks/{}/actions/stop", pid);
+        let path = format!("/playbooks/{pid}/actions/stop");
         Ok(self
             .client
             .post::<Empty, Value>(&path, &json!(null))

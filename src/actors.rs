@@ -53,7 +53,7 @@ impl Actors<'_> {
         playbook_id: &str,
         options: Option<HashMap<String, String>>,
     ) -> Result<Vec<ActorSpec>, HTTPError> {
-        let path = format!("/playbooks/{}/actors", playbook_id);
+        let path = format!("/playbooks/{playbook_id}/actors");
         let res = self.client.get::<ActorsEndpoint>(&path, options).await?;
         Ok(res.data.unwrap())
     }
@@ -65,7 +65,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub async fn get(&self, pid: &str, name: &str) -> Result<ActorSpec, HTTPError> {
-        let path = format!("/actors/{}/{}", pid, name);
+        let path = format!("/actors/{pid}/{name}");
         let res = self.client.get::<ActorEndpoint>(&path, None).await?;
         Ok(res.data.unwrap())
     }
@@ -77,7 +77,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub fn logs(&self, pid: &str, name: &str) -> EventSource {
-        let path = format!("/actors/{}/{}/logs", pid, name);
+        let path = format!("/actors/{pid}/{name}/logs");
         EventSource::get(self.client.url(&path).expect("Invalid URL"))
     }
 
@@ -88,7 +88,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub async fn info(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
-        let path = format!("/actors/{}/{}/info", pid, name);
+        let path = format!("/actors/{pid}/{name}/info");
         let res = self.client.get::<JsonValue>(&path, None).await?;
         Ok(res.data.unwrap())
     }
@@ -100,7 +100,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub async fn stats(&self, pid: &str, name: &str) -> Result<Value, HTTPError> {
-        let path = format!("/actors/{}/{}/stats", pid, name);
+        let path = format!("/actors/{pid}/{name}/stats");
         let res = self.client.get::<JsonValue>(&path, None).await?;
         Ok(res.data.unwrap())
     }
@@ -112,7 +112,7 @@ impl Actors<'_> {
     /// `pid`: The ID of the playbook
     /// `name`: The name of the actor
     pub async fn sync(&self, pid: &str, name: &str, payload: Synchronization) -> Result<u16, HTTPError> {
-        let path = format!("/actors/{}/{}/sync", pid, name);
+        let path = format!("/actors/{pid}/{name}/sync");
         let res = self
             .client
             .post::<Empty, Synchronization>(&path, &payload)

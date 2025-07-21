@@ -23,7 +23,7 @@ mod common;
 async fn list_actors_test() {
     let pid = "1";
     let setup = mock(
-        format!("/playbooks/{}/actors", pid).as_str(),
+        format!("/playbooks/{pid}/actors").as_str(),
         "actors/list-actors-success",
         "GET",
     )
@@ -63,9 +63,9 @@ async fn get_actor_logs() {
     while let Some(event) = es.next().await {
         match event {
             Ok(Event::Open) => println!("Connection Open!"),
-            Ok(Event::Message(message)) => println!("Message: {:#?}", message),
+            Ok(Event::Message(message)) => println!("Message: {message:#?}"),
             Err(err) => {
-                println!("Error: {}", err);
+                println!("Error: {err}");
                 es.close();
             }
         }
@@ -119,7 +119,7 @@ async fn sync_actor_test() {
     };
 
     let response = client.actors().sync(pid, name, payload).await;
-    println!("{:?}", response);
+    println!("{response:?}");
     assert!(response.is_ok());
     assert_eq!(202, response.unwrap());
 }
