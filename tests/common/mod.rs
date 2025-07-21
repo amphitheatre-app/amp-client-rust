@@ -25,7 +25,7 @@ use mockito::{Server, ServerGuard};
 /// It builds a response struct for the mock server using the fixture.
 #[allow(dead_code)]
 pub async fn mock(path: &str, fixture: &str, method: &str) -> (Client, ServerGuard) {
-    let path = format!("/v1{}", path);
+    let path = format!("/v1{path}");
     let (status, body) = parse_fixture(fixture);
 
     let mut server = Server::new_async().await;
@@ -47,7 +47,7 @@ pub async fn mock(path: &str, fixture: &str, method: &str) -> (Client, ServerGua
 }
 
 fn parse_fixture(fixture: &str) -> (usize, String) {
-    let fixture = format!("./tests/fixtures/v1/api/{}.http", fixture);
+    let fixture = format!("./tests/fixtures/v1/api/{fixture}.http");
 
     let content = fs::read_to_string(fixture.as_str()).expect("Something went wrong: Couldn't read the file");
 
