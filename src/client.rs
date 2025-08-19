@@ -50,22 +50,22 @@ impl Client {
 
 impl Client {
     /// Returns the `accounts` services attached to this client
-    pub fn accounts(&self) -> Accounts {
+    pub fn accounts(&self) -> Accounts<'_> {
         Accounts { client: &self.client }
     }
 
     /// Returns the `actors` services attached to this client
-    pub fn actors(&self) -> Actors {
+    pub fn actors(&self) -> Actors<'_> {
         Actors { client: &self.client }
     }
 
     /// Returns the `oauth` service attached to this client
-    pub fn oauth(&self) -> OAuth {
+    pub fn oauth(&self) -> OAuth<'_> {
         OAuth { client: &self.client }
     }
 
     /// Returns the `playbooks` service attached to this client
-    pub fn playbooks(&self) -> Playbooks {
+    pub fn playbooks(&self) -> Playbooks<'_> {
         Playbooks { client: &self.client }
     }
 }
