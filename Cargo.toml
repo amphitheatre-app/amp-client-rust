@@ -14,9 +14,9 @@ amp-common = { git = "https://github.com/amphitheatre-app/common", tag = "v0.11.
 futures = "0.3.31"
 reqwest-eventsource = "0.6.0"
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.145", features = ["raw_value"] }
-tokio = { version = "1.48.0", features = [ "full" ] }
+serde_json = { version = "1.0.149", features = ["raw_value"] }
+tokio = { version = "1.49.0", features = [ "full" ] }
 
 [dev-dependencies]
 assert_matches = "1.5.0"
-mockito = "1.7.0"
+mockito = "1.7.1"
